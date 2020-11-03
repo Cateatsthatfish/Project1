@@ -20,24 +20,31 @@ void initial_Matrix(Matrix &A);
 
 int main(){
     ////////////initialization type 2 ->use set function
-    Matrix A;
-    auto t1=std::chrono::steady_clock::now();
+
+    struct Matrix A;
     initial_Matrix(A);
-    auto t2=std::chrono::steady_clock::now(); 
-    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
-    cout << "(time: " << time << "ms)" << endl;
     //display_Matrix(A);
 
-    Matrix B;
+    struct Matrix B;
     initial_Matrix(B);
     //display_Matrix(B);
-
-    Matrix C;
+    
+    cout << "before C?" << endl;
+    struct Matrix C ;
+    cout << "after C?"<< endl;
     //cout << "interrupt" << endl;
-
-
+    
+    /*
+    auto t1=std::chrono::steady_clock::now();
+    cout << "trouble?" << endl;
+    */
     C = multiplication(A,B,C);
-
+    /*
+    auto t2=std::chrono::steady_clock::now(); 
+    cout << "trouble" << endl;
+    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
+    cout << "(time: " << time << "ms)" << endl;
+    */
     
     display_Matrix(C);
 
@@ -52,6 +59,7 @@ int main(){
 }
 
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
+    cout << "in function" << endl;
     C.row = A.row;
     C.column = B.column;
     C.total = C.row * C.column;
