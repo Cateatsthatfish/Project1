@@ -21,7 +21,11 @@ void initial_Matrix(Matrix &A);
 int main(){
     ////////////initialization type 2 ->use set function
     Matrix A;
+    auto t1=std::chrono::steady_clock::now();
     initial_Matrix(A);
+    auto t2=std::chrono::steady_clock::now(); 
+    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
+    cout << "(time: " << time << "ms)" << endl;
     //display_Matrix(A);
 
     Matrix B;
@@ -30,19 +34,10 @@ int main(){
 
     Matrix C;
     //cout << "interrupt" << endl;
-    double span = 0;
-    double counts = 0;
-    LARGE_INTEGER nFreq;
-    LARGE_INTEGER nBeginTime;
-    LARGE_INTEGER nEndTime;
-    QueryPerformanceFrequency(&nFreq);
-    QueryPerformanceCounter(&nBeginTime);//开始计时
+
 
     C = multiplication(A,B,C);
 
-    QueryPerformanceCounter(&nEndTime);//停止计时
-    span = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
-    cout << "(time: " << span * 1000 << "ms)" << endl;
     
     display_Matrix(C);
 
