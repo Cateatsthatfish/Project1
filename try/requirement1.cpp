@@ -2,7 +2,9 @@
 
 //2020.10.28
 #include<iostream>
-#include<chrono> //计算时间
+#include<chrono> //计算时间方法一【failed】
+#include<Windows.h> //计算时间方法二
+
 
 using namespace std;
 struct Matrix{
@@ -28,13 +30,20 @@ int main(){
 
     Matrix C;
     //cout << "interrupt" << endl;
-    auto t1=std::chrono::steady_clock::now(); //开始时间
+    double span = 0;
+    double counts = 0;
+    LARGE_INTEGER nFreq;
+    LARGE_INTEGER nBeginTime;
+    LARGE_INTEGER nEndTime;
+    QueryPerformanceFrequency(&nFreq);
+    QueryPerformanceCounter(&nBeginTime);//开始计时
+
     C = multiplication(A,B,C);
-    auto t2=std::chrono::steady_clock::now();
-    //cout << "line3" <<endl;
-    double time = 0;
-    time = std::chrono::duration<double,std::milli>(t2-t1).count();
-    //cout << "(time: " << time << "ms)" << endl; 
+
+    QueryPerformanceCounter(&nEndTime);//停止计时
+    span = (double)(nEndTime.QuadPart - nBeginTime.QuadPart) / (double)nFreq.QuadPart;
+    cout << "(time: " << span * 1000 << "ms)" << endl;
+    
     display_Matrix(C);
 
     //判定可以相乘的条件
@@ -52,7 +61,8 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
     C.column = B.column;
     C.total = C.row * C.column;
     long long n = A.column;
-    C.datas = new float[C.total];    
+    C.datas = new float[C.total]; 
+
     for(long long i = 0; i < C.row ; i++ ){
         for(long long j = 0; j < C.column; j++ ){
             float temp = 0; //// long double (最后计算出来的C可以是long double 吗？)
