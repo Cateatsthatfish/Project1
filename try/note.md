@@ -1,10 +1,10 @@
 # 2020.10.28 2:12
 ## strct_multi.cpp
-1.Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C);
+1. Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C);
 矩阵相乘
-2.void display_Matrix(const Matrix & A);
+2. void display_Matrix(const Matrix & A);
 把矩阵中的数一行展示
-3.void initial_Matrix(Matrix &A);
+3. void initial_Matrix(Matrix &A);
 初始化矩阵A,B（现在还是默认设定）
 
 # 2020.11.3
