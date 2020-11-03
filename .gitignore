@@ -1,3 +1,4 @@
 //try/requirement1.exe
 try/*.exe
 try/*.exe.stackdump
+try/*.json
