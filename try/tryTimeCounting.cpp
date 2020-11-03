@@ -26,13 +26,18 @@ int main(){
     initial_Matrix(B);
     display_Matrix(B);
     
+    
     cout << "before C?" << endl;
     struct Matrix C ;
+    display_Matrix(C);
     cout << "after C?"<< endl;
+    
 
     auto t1=std::chrono::steady_clock::now(); //开始时间
-    //C = multiplication(A,B,C);
-    initial_Matrix(C);
+    
+    C = multiplication(A,B,C);
+    //initial_Matrix(C);
+    
     auto t2=std::chrono::steady_clock::now(); //结束时间
     double time=std::chrono::duration<double,std::milli>(t2-t1).count();
     cout << "(time: " << time << "ms)" << endl;
@@ -44,7 +49,7 @@ int main(){
     //if(A.column == B.row){    }
     delete [] A.datas;
     delete [] B.datas;
-    delete [] C.datas;
+    //delete [] C.datas;
 
     //Matrix C = multiplication()
     return 0;
@@ -74,9 +79,11 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
 
 }
 void display_Matrix(const Matrix & A){
-    cout << "row = " << A.row << endl;
-    cout << "column =" << A.column << endl;
-    cout << "total = " << A.total << endl;
+    //cout << "row = " << A.row << endl;
+    //cout << "column =" << A.column << endl;
+    //cout << "total = " << A.total << endl;
+    cout << "location = " << &A << endl;
+    cout << "location of data = " << &A.datas <<endl;
     for(int i = 0; i< A.total; i++){
         cout << A.datas[i] << " ";
     }
