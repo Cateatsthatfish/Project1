@@ -20,6 +20,7 @@ void initial_Matrix(Matrix &A);
 
 int main(){
     ////////////initialization type 2 ->use set function
+    float time = 1.0;
 
     struct Matrix A;
     initial_Matrix(A);
@@ -34,17 +35,18 @@ int main(){
     cout << "after C?"<< endl;
     //cout << "interrupt" << endl;
     
-    /*
+    
     auto t1=std::chrono::steady_clock::now();
     cout << "trouble?" << endl;
-    */
+    
     C = multiplication(A,B,C);
-    /*
+    
     auto t2=std::chrono::steady_clock::now(); 
     cout << "trouble" << endl;
-    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
+    //double time=std::chrono::duration<double,std::milli>(t2-t1).count();
+    
     cout << "(time: " << time << "ms)" << endl;
-    */
+    
     
     display_Matrix(C);
 
