@@ -1,5 +1,6 @@
-//2020.10.28
+#include<chrono> //time counting
 #include<iostream>
+
 using namespace std;
 struct Matrix{
     long long row;
@@ -15,7 +16,11 @@ void initial_Matrix(Matrix &A);
 int main(){
     ////////////initialization type 2 ->use set function
     Matrix A;
+    auto t1=std::chrono::steady_clock::now();
     initial_Matrix(A);
+    auto t2=std::chrono::steady_clock::now();
+    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
+    cout << "(time: " << time << "ms)" << endl;
     display_Matrix(A);
     delete [] A.datas;
 
