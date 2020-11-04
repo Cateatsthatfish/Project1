@@ -25,15 +25,32 @@ bool isValid_int(string in);
 
 int main(){
     ////////////initialization type 2 ->use set function
+    
     struct Matrix A;
+    cout << "set the first matrix A(m1,n1):" << endl;
     initial_Matrix(A);
     //display_Matrix(A);
 
     struct Matrix B;
+    cout << "set the second matrix B(m2,n2):" << endl;
     initial_Matrix(B);
     //display_Matrix(B);
 
-    
+    cout << "……start to compute the multiplication of A and B to get matric C(m1,n2)……" << endl;
+    while(B.row!=A.column){
+    cout << "OOPs! the sizes of matrix A and B don't match!" << endl;
+    cout << "->press \'1\' to reset matrix B with the right row number;" << endl;
+    cout << "->press any other key to quit;" << endl;
+    string choice;
+    getline(cin,choice);    
+    if(choice.length()==1 && choice[0]=='1'){
+        initial_Matrix(B);
+    }else{
+        cout << "bye! "<< endl;
+        return 0;
+    }
+    }
+
     struct Matrix C ;
 
     auto t1=std::chrono::steady_clock::now(); //开始时间
@@ -44,7 +61,6 @@ int main(){
     double time=std::chrono::duration<double,std::milli>(t2-t1).count();
     cout << "(time: " << time << "ms)" << endl;
    
-    
     //display_Matrix(C);
 
     //判定可以相乘的条件
@@ -97,20 +113,20 @@ void display_Matrix(const Matrix & A){
 void initial_Matrix(Matrix &A){
     string n1_in, m1_in; 
     long long n1,m1;
-    cout << "initialize a m*n matrix:(m,n are positive integers)" << endl;
-    cout << "m= ";
+    //cout << "initialize a m*n matrix:(m,n are positive integers)" << endl;
+    cout << "#row = ";
     getline(cin,m1_in);
     while(!isValid_int(m1_in)){
     cout << "Invalid input! please try again! "<<endl;
-    cout << "m= ";
+    cout << "#row = ";
     getline(cin,m1_in);    
         }
 
-    cout << "n= ";
+    cout << "#column = ";
     getline(cin,n1_in);
     while(!isValid_int(n1_in)){
     cout << "Invalid input! please try again! "<<endl;
-    cout << "n= ";
+    cout << "#column = ";
     getline(cin,n1_in);      
         }
 
