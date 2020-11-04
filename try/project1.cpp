@@ -52,15 +52,8 @@ int main(){
     }
 
     struct Matrix C ;
-
-    auto t1=std::chrono::steady_clock::now(); //开始时间
-    
     C = multiplication(A,B,C);
-   
-    auto t2=std::chrono::steady_clock::now(); //结束时间
-    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
-    cout << "(time: " << time << "ms)" << endl;
-   
+      
     //display_Matrix(C);
 
     //判定可以相乘的条件
@@ -80,7 +73,8 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
     C.total = C.row * C.column;
     C.datas = new float[C.total];
     long long n = A.column;
-    
+
+    auto t1=std::chrono::steady_clock::now(); //开始时间
     for(long long i = 0; i < C.row ; i++ ){
         for(long long j = 0; j < C.column; j++ ){
             float temp = 0; //// long double (最后计算出来的C可以是long double 吗？)
@@ -94,6 +88,9 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
             
         }
     }
+    auto t2=std::chrono::steady_clock::now(); //结束时间
+    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
+    cout << "(time: " << time << "ms)" << endl;
     return C;
 
 }
