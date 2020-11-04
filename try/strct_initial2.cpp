@@ -1,7 +1,13 @@
 #include<chrono> //time counting
 #include<iostream>
 #include <string> //getline()
+#include <cstdlib> //随机数
+#include <ctime> //随机数
+
 using namespace std;
+const int a = 0;
+const int b = 1;
+
 struct Matrix{
     long long row;
     long long column;
@@ -22,7 +28,7 @@ int main(){
     auto t2=std::chrono::steady_clock::now();
     double time=std::chrono::duration<double,std::milli>(t2-t1).count();
     cout << "(time: " << time << "ms)" << endl;
-    display_Matrix(A);
+    //display_Matrix(A);
     delete [] A.datas;
 
     //Matrix C = multiplication()
@@ -44,21 +50,21 @@ void display_Matrix(const Matrix & A){
 ////这里初始化的内容待改进
 void initial_Matrix(Matrix &A){
     string n1_in, m1_in; 
-    int n1,m1;
+    long long n1,m1;
     cout << "initialize a m*n matrix:(m,n are positive integers)" << endl;
-    cout << "m1= ";
+    cout << "m= ";
     getline(cin,m1_in);
     while(!isValid_int(m1_in)){
     cout << "Invalid input! please try again! "<<endl;
-    cout << "m1= ";
+    cout << "m= ";
     getline(cin,m1_in);    
         }
 
-    cout << "n1= ";
+    cout << "n= ";
     getline(cin,n1_in);
     while(!isValid_int(n1_in)){
     cout << "Invalid input! please try again! "<<endl;
-    cout << "n1= ";
+    cout << "n= ";
     getline(cin,n1_in);      
         }
 
@@ -69,8 +75,10 @@ void initial_Matrix(Matrix &A){
     A.column = n1;
     A.total = A.row * A.column;
     A.datas = new float [A.total];
+
+    srand((int)time(0));
     for(int i = 0; i< A.total;i++){
-        A.datas[i] = i+1;
+        A.datas[i] = a + rand()%(b-a) + rand()/double(RAND_MAX);
     }
 
 }
