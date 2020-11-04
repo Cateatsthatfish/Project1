@@ -7,7 +7,7 @@ bool isValid_int(string in);
 
 int main(){
     string n1_in, m1_in; 
-    int n1,m1;
+    long long n1,m1;
     cout << "initialize a m*n matrix:(m,n are positive integers)" << endl;
     cout << "m1= ";
     getline(cin,m1_in);
@@ -47,9 +47,7 @@ bool isValid_int(string in)
             len = false;
             break;
         }
-    }
-       
-    
+    }    
     return len;
 }
 /*
