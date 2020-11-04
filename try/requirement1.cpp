@@ -14,6 +14,7 @@ struct Matrix{
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C);
 void display_Matrix(const Matrix & A);
 void initial_Matrix(Matrix &A);
+bool isValid_int(string in);
 
 int main(){
     ////////////initialization type 2 ->use set function
@@ -94,4 +95,25 @@ void initial_Matrix(Matrix &A){
         A.datas[i] = i;
     }
 
+}
+
+bool isValid_int(string in)
+{
+    bool len = true;
+    if(in.length()==0){
+        len = false;
+    
+    }
+    // 不允许第一位是0的情况,与不允许输入0
+    if(in[0]=='0'){
+        len = false;
+    }
+    for(int i = 0 ; i< in.length();i++){
+        if(in[i]>'9'||in[i]<'0')
+        {
+            len = false;
+            break;
+        }
+    }    
+    return len;
 }
