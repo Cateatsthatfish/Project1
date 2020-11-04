@@ -1,7 +1,7 @@
 
 #include<iostream>
 #include<chrono> //计算时间方法一
-
+#pragma GCC optimize(3, "Ofast", "inline") //加速
 
 using namespace std;
 struct Matrix{
