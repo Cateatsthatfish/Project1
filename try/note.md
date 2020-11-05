@@ -1,3 +1,30 @@
+# 2020.11.5
+## 22:16 
+**【更新】**
+strct_multi.cpp ：修改了之前的错误的相乘逻辑（我希望这次应该没问题了）
+project1.cpp ： 更新了乘法的函数和display的函数
+**【测试】**
+strct_multi.cpp：（没有o3加速）
+A：200000 * 3, B : 3 * 20000 -> C:200000 * 20000
+(time: 71565.3ms)
+(time: 67980.8ms)
+**【遗留问题】**
+计算的速度是否和和矩阵的形状有关系？
+如果是20000*20000的两个矩阵相乘，会得到一个20000*20000的矩阵，但如果是200M*1和1*200M，最后得到的M就是一个数
+
+## 20:27
+【测试结果】
+(2000*200)*(200*2000)
+不报错，耗时(time: 251.829ms)
+
+(1*20000)*(20000*1)
+报错：
+ 0 [main] project1 134 cygwin_exception::open_stackdumpfile: Dumping stack trace to project1.exe.stackdump
+
+(1*200)*(200*1)
+报错：
+ 0 [main] project1 134 cygwin_exception::open_stackdumpfile: Dumping stack trace to project1.exe.stackdump
+ 
 # 2020.11.4
 ## 22：34
 【完成】
