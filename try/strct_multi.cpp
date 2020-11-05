@@ -10,16 +10,17 @@ struct Matrix{
 
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C);
 void display_Matrix(const Matrix & A);
-void initial_Matrix(Matrix &A);
+void initial_MatrixA(Matrix &A);
+void initial_MatrixB(Matrix &A);
 
 int main(){
     ////////////initialization type 2 ->use set function
     Matrix A;
-    initial_Matrix(A);
+    initial_MatrixA(A);
     //display_Matrix(A);
 
     Matrix B;
-    initial_Matrix(B);
+    initial_MatrixB(B);
     //display_Matrix(B);
 
     Matrix C;
@@ -44,7 +45,7 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
     
     for(long long i = 0; i < C.row ; i++ ){
         for(long long j = 0; j < C.column; j++ ){
-            float temp = 0; //// long double (最后计算出来的C可以是long double 吗？)
+            float temp = 0; 
             for (long long k = 0; k< n; k++){
                 //cout << "A " << k+n*i << " B " << j+n*k << endl;
                 temp += A.datas[k+n*i] * B.datas[j+n*k];
@@ -69,9 +70,18 @@ void display_Matrix(const Matrix & A){
 }
 
 ////这里初始化的内容待改进
-void initial_Matrix(Matrix &A){
-    A.row = 2;
+void initial_MatrixA(Matrix &A){
+    A.row = 1;
     A.column = 2;
+    A.total = A.row * A.column;
+    for(int i = 0; i< A.total;i++){
+        A.datas[i] = i;
+    }
+
+}
+void initial_MatrixB(Matrix &A){
+    A.row = 2;
+    A.column = 1;
     A.total = A.row * A.column;
     for(int i = 0; i< A.total;i++){
         A.datas[i] = i;
