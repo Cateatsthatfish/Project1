@@ -1,4 +1,4 @@
-
+#include<chrono> //计算时间
 #include<iostream>
 using namespace std;
 struct Matrix{
@@ -46,6 +46,7 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
     C.total = m*l;
     C.datas = new float[C.total]();
 
+    auto t1=std::chrono::steady_clock::now(); //开始时间
     for(long long i = 0; i < m ; i++ ){
         for(long long j = 0; j < l; j++ ){
             float temp = 0; 
@@ -60,11 +61,12 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
                 //cout << " ->C["<< l*i+j << "]= "<<temp << endl;   
 
                 //cout << " j+ bn*i: " << j+ bn*i << endl;
-                C.datas[l*i+j] = temp;
-
-            
+                C.datas[l*i+j] = temp;  
         }
     }
+    auto t2=std::chrono::steady_clock::now(); //结束时间
+    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
+    cout << "(time: " << time << "ms)" << endl;
 
     return C;
 
@@ -85,7 +87,7 @@ void display_Matrix(const Matrix & A){
 
 ////这里初始化的内容待改进
 void initial_MatrixA(Matrix &A){
-    A.row = 9;
+    A.row = 200000;
     A.column = 3;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
@@ -96,7 +98,7 @@ void initial_MatrixA(Matrix &A){
 }
 void initial_MatrixB(Matrix &A){
     A.row = 3;
-    A.column = 10;
+    A.column = 20000;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){
