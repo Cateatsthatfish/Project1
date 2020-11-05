@@ -1,6 +1,6 @@
 
 #include<iostream>
-#include<chrono> //计算时间方法一
+#include<chrono> //计算时间
 #include <string> //getline()
 #include <cstdlib> //随机数
 #include <ctime> //随机数
@@ -71,13 +71,17 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
     C.row = A.row;
     C.column = B.column;
     C.total = C.row * C.column;
-    C.datas = new float[C.total];
-    long long n = A.column;
+    display_Matrix(C);
+    C.datas = new float[C.total]();
 
+    //cout <<"3" <<endl;
+    long long n = A.column;
+    cout << "n=" << n << endl;
     auto t1=std::chrono::steady_clock::now(); //开始时间
     for(long long i = 0; i < C.row ; i++ ){
+        //cout << "inloop" <<endl;
         for(long long j = 0; j < C.column; j++ ){
-            float temp = 0; //// long double (最后计算出来的C可以是long double 吗？)
+            float temp = 0; 
             for (long long k = 0; k< n; k++){
                 //cout << "A " << k+n*i << " B " << j+n*k << endl;
                 temp += A.datas[k+n*i] * B.datas[j+n*k];
@@ -95,15 +99,19 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
 
 }
 void display_Matrix(const Matrix & A){
-    //cout << "row = " << A.row << endl;
-    //cout << "column =" << A.column << endl;
-    //cout << "total = " << A.total << endl;
+    cout << "row = " << A.row << endl;
+    cout << "column =" << A.column << endl;
+    cout << "total = " << A.total << endl;
     //cout << "location = " << &A << endl;
     //cout << "location of data = " << &A.datas <<endl;
+    
+    /*
     for(int i = 0; i< A.total; i++){
         cout << A.datas[i] << " ";
     }
+    
     cout << endl;
+    */
 }
 
 ////这里初始化的内容待改进
@@ -133,7 +141,7 @@ void initial_Matrix(Matrix &A){
     A.row = m1;
     A.column = n1;
     A.total = A.row * A.column;
-    A.datas = new float [A.total];
+    A.datas = new float [A.total]();
 
     srand((int)time(0));
     for(int i = 0; i< A.total;i++){
