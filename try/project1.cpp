@@ -67,54 +67,51 @@ int main(){
 }
 
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
-    //cout << "in function" << endl;
-    C.row = A.row;
-    C.column = B.column;
-    C.total = C.row * C.column;
-    display_Matrix(C);
+
+    long long m = A.row;
+    long long n = A.column;
+    long long l = B.column;
+    C.row = m;
+    C.column = l;
+    C.total = m*l;
     C.datas = new float[C.total]();
 
-    //cout <<"3" <<endl;
-    long long n = A.column;
-    cout << "n=" << n << endl;
     auto t1=std::chrono::steady_clock::now(); //开始时间
-    for(long long i = 0; i < C.row ; i++ ){
-        //cout << "inloop" <<endl;
-        for(long long j = 0; j < C.column; j++ ){
+    for(long long i = 0; i < m ; i++ ){
+        for(long long j = 0; j < l; j++ ){
             float temp = 0; 
             for (long long k = 0; k< n; k++){
-                //cout << "A " << k+n*i << " B " << j+n*k << endl;
-                temp += A.datas[k+n*i] * B.datas[j+n*k];
+                temp += A.datas[n*i+k] * B.datas[l*k+j];
                 }
-                //cout << "C " << j+n*i << endl;
-                C.datas[j+n*i] = temp;
-
-            
+                C.datas[l*i+j] = temp;  
         }
     }
     auto t2=std::chrono::steady_clock::now(); //结束时间
     double time=std::chrono::duration<double,std::milli>(t2-t1).count();
     cout << "(time: " << time << "ms)" << endl;
+
     return C;
 
 }
+
+
 void display_Matrix(const Matrix & A){
     cout << "row = " << A.row << endl;
     cout << "column =" << A.column << endl;
     cout << "total = " << A.total << endl;
     //cout << "location = " << &A << endl;
     //cout << "location of data = " << &A.datas <<endl;
-    
-    /*
-    for(int i = 0; i< A.total; i++){
-        cout << A.datas[i] << " ";
+    long long n = A.column;
+    for(long long i = 0; i< A.row;i++){
+        for(long long j =0 ; j < A.column ; j++){
+        cout << A.datas[i*n+j] << " ";
+        }
+        cout << endl;
     }
-    
     cout << endl;
-    */
 }
 
-////这里初始化的内容待改进
+
 void initial_Matrix(Matrix &A){
     string n1_in, m1_in; 
     long long n1,m1;
