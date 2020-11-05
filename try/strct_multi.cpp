@@ -31,7 +31,7 @@ int main(){
     //if(A.column == B.row){    }
     delete [] A.datas;
     delete [] B.datas;
-    delete [] C.datas;
+    //delete [] C.datas;
 
     //Matrix C = multiplication()
     return 0;
@@ -41,17 +41,20 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
     C.row = A.row;
     C.column = B.column;
     C.total = C.row * C.column;
-    long long n = A.column;
+    long long an = A.column;
+    long long bn = B.column;
     
     for(long long i = 0; i < C.row ; i++ ){
         for(long long j = 0; j < C.column; j++ ){
             float temp = 0; 
-            for (long long k = 0; k< n; k++){
-                //cout << "A " << k+n*i << " B " << j+n*k << endl;
-                temp += A.datas[k+n*i] * B.datas[j+n*k];
+            for (long long k = 0; k< an; k++){
+                //cout << "i="<< i << " j="<< j << " k= "<< k ;
+                // cout << " k+an*i: " << k+an*i << " j+bn*k: " << j+bn*k ;
+                
+                temp += A.datas[k+an*i] * B.datas[j+bn*k];
                 }
-                //cout << "C " << j+n*i << endl;
-                C.datas[j+n*i] = temp;
+                //cout << " j+ bn*i: " << j+ bn*i << endl;
+                C.datas[j+ bn*i] = temp;
 
             
         }
@@ -63,27 +66,31 @@ void display_Matrix(const Matrix & A){
     cout << "row = " << A.row << endl;
     cout << "column =" << A.column << endl;
     cout << "total = " << A.total << endl;
-    for(int i = 0; i< A.total; i++){
-        cout << A.datas[i] << " ";
+    long long n = A.column;
+    for(long long i = 0; i< A.row;i++){
+        for(long long j =0 ; j < A.column ; j++){
+        cout << A.datas[i*n+j] << " ";
+        }
+        cout << endl;
     }
     cout << endl;
 }
 
 ////这里初始化的内容待改进
 void initial_MatrixA(Matrix &A){
-    A.row = 1;
-    A.column = 2;
+    A.row = 5;
+    A.column = 3;
     A.total = A.row * A.column;
-    for(int i = 0; i< A.total;i++){
+    for(long long i = 0; i< A.total;i++){
         A.datas[i] = i;
     }
 
 }
 void initial_MatrixB(Matrix &A){
-    A.row = 2;
-    A.column = 1;
+    A.row = 3;
+    A.column = 9;
     A.total = A.row * A.column;
-    for(int i = 0; i< A.total;i++){
+    for(long long i = 0; i< A.total;i++){
         A.datas[i] = i;
     }
 
