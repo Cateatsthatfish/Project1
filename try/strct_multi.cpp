@@ -1,11 +1,11 @@
-//2020.10.28
+
 #include<iostream>
 using namespace std;
 struct Matrix{
     long long row;
     long long column;
     long long total ;
-    float * datas = new float[total];
+    float * datas;
 };
 
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C);
@@ -17,38 +17,34 @@ int main(){
     ////////////initialization type 2 ->use set function
     Matrix A;
     initial_MatrixA(A);
-    display_Matrix(A);
+    //display_Matrix(A);
 
     Matrix B;
     initial_MatrixB(B);
-    display_Matrix(B);
+    //display_Matrix(B);
 
     Matrix C;
     C = multiplication(A,B,C);
-    display_Matrix(C);
+    cout << "finished!" <<endl;
+    //display_Matrix(C);
 
-    //判定可以相乘的条件
-    //if(A.column == B.row){    }
     delete [] A.datas;
     delete [] B.datas;
-    //delete [] C.datas;
+    delete [] C.datas;
 
     //Matrix C = multiplication()
     return 0;
 }
 
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
-    C.row = A.row;
-    C.column = B.column;
-    C.total = C.row * C.column;
-    long long an = A.column;
-    long long bn = B.column;
 
     long long m = A.row;
     long long n = A.column;
     long long l = B.column;
     C.row = m;
     C.column = l;
+    C.total = m*l;
+    C.datas = new float[C.total]();
 
     for(long long i = 0; i < m ; i++ ){
         for(long long j = 0; j < l; j++ ){
@@ -89,9 +85,10 @@ void display_Matrix(const Matrix & A){
 
 ////这里初始化的内容待改进
 void initial_MatrixA(Matrix &A){
-    A.row = 3;
+    A.row = 9;
     A.column = 3;
     A.total = A.row * A.column;
+    A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){
         A.datas[i] = i;
     }
@@ -99,8 +96,9 @@ void initial_MatrixA(Matrix &A){
 }
 void initial_MatrixB(Matrix &A){
     A.row = 3;
-    A.column = 3;
+    A.column = 10;
     A.total = A.row * A.column;
+    A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){
         A.datas[i] = i;
     }
