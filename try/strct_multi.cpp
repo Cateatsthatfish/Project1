@@ -1,3 +1,9 @@
+/*
+矩阵定位和数组定位
+A：m*n -> A(i,k)=datas[i*n+k]
+B：n*l -> B(k,j)=datas[k*l+j]
+C: m*l -> C(i,j)=datas[i*l+j]
+*/
 #include<chrono> //计算时间
 #include<iostream>
 using namespace std;
@@ -17,18 +23,21 @@ int main(){
     ////////////initialization type 2 ->use set function
     Matrix A;
     initial_MatrixA(A);
+    //display_Matrix(A);
 
     Matrix B;
     initial_MatrixB(B);
+    //display_Matrix(B);
 
     Matrix C;
     C = multiplication(A,B,C);
-
+    //display_Matrix(C);
+    
     for(int i = 0; i< 5; i++){
         cout << 1+i <<":";
         C = multiplication(A,B,C);
     }
-
+    
     cout << "finished!" <<endl;
     //display_Matrix(C);
 
@@ -76,15 +85,22 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
 
 }
 void display_Matrix(const Matrix & A){
+    /*
     cout << "row = " << A.row << endl;
     cout << "column =" << A.column << endl;
     cout << "total = " << A.total << endl;
     long long n = A.column;
+    */
+    /*
     for(long long i = 0; i< A.row;i++){
         for(long long j =0 ; j < A.column ; j++){
-        cout << A.datas[i*n+j] << " ";
+        cout << A.datas[i*n+j] << "  ";
         }
         cout << endl;
+    }
+    */
+    for(int i = 0 ; i< A.total;i++){
+        cout << A.datas[i] << ",";
     }
     cout << endl;
 }
