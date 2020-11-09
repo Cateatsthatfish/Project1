@@ -17,14 +17,18 @@ int main(){
     ////////////initialization type 2 ->use set function
     Matrix A;
     initial_MatrixA(A);
-    //display_Matrix(A);
 
     Matrix B;
     initial_MatrixB(B);
-    //display_Matrix(B);
 
     Matrix C;
     C = multiplication(A,B,C);
+
+    for(int i = 0; i< 5; i++){
+        cout << 1+i <<":";
+        C = multiplication(A,B,C);
+    }
+
     cout << "finished!" <<endl;
     //display_Matrix(C);
 
@@ -87,8 +91,8 @@ void display_Matrix(const Matrix & A){
 
 ////这里初始化的内容待改进
 void initial_MatrixA(Matrix &A){
-    A.row = 200000;
-    A.column = 3;
+    A.row = 1400;
+    A.column = 1400;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){
@@ -97,8 +101,8 @@ void initial_MatrixA(Matrix &A){
 
 }
 void initial_MatrixB(Matrix &A){
-    A.row = 3;
-    A.column = 20000;
+    A.row = 1400;
+    A.column = 1400;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){
