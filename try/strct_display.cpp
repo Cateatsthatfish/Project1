@@ -53,17 +53,16 @@ void display_MatrixB(const Matrix & A){
         cout << A.datas[i] << ",";
     }
     cout << endl;
-    long long n = A.column;
-    for(long long j =0 ; j < A.column ; j++){
-        for(long long i = 0; i< A.row;i++){
-        
-        cout << A.datas[i*n+j] << " ";
+    long long n = A.row;
+    
+    for(long long i = 0; i< A.row;i++){
+        for(long long j =0 ; j < A.column ; j++){
+        cout << A.datas[j*n+i] << " ";
         }
         cout << endl;
     }
     cout << endl;
 }
-
 ////这里初始化的内容待改进
 void initial_MatrixA(Matrix &A){
     A.row = 4;
