@@ -1,5 +1,19 @@
 # 2020.11.10
+## 20:46
+
+[others_ML1reorder.cpp]关于调整B中元素的顺序来进行优化的问题，仍然迷惑
+
+## 15:25
+
+【做的事情】
+
+1. 创建一个文件夹learn（主要是放学习到的加速的知识？代码
+2. my_multiline1.cpp->把多线程的代码插入strct_multi.cpp
+3. test_int_mm1.cpp->long long -> int
+4. others_ML1reorder.cpp-> others_multiline.cpp的优化版本B[k\*P+j]->B[j\*P+k]
+
 ## 1:39
+
 不如百度……
 
 ## 0:04
@@ -62,7 +76,7 @@ C:
 
 A：m\*n -> A(i,k)=datas[i*n+k]
 
-B：n\*l -> B(k,j)=datas[k*l+j]
+B：n\*l -> B(k,j)=datas[j*n+k]
 
 C: m\*l -> C(i,j)=datas[i*l+j]
 
