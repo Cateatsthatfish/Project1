@@ -89,9 +89,11 @@ void display_Matrix(const Matrix & A){
     cout << "row = " << A.row << endl;
     cout << "column =" << A.column << endl;
     cout << "total = " << A.total << endl;
-    long long n = A.column;
     */
-    /*
+   /*
+    long long n = A.column;
+    
+    
     for(long long i = 0; i< A.row;i++){
         for(long long j =0 ; j < A.column ; j++){
         cout << A.datas[i*n+j] << "  ";
@@ -105,7 +107,6 @@ void display_Matrix(const Matrix & A){
     cout << endl;
 }
 
-////这里初始化的内容待改进
 void initial_MatrixA(Matrix &A){
     A.row = 1400;
     A.column = 1400;
