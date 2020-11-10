@@ -76,15 +76,12 @@ int main()
     C.total = M*P;
     C.datas = new float[C.total]();
 
-//const int M = 4, N = 3, P = 2;
-//int A[M * N], B[N * P], C[M * P];
-
-
-
+    const int m = 5;
+    for(int i = 0; i< 4; i++){
     auto t1=std::chrono::steady_clock::now(); 
 
     // ----------------------------------- 多线程
-    const int m = 4;
+
     //句柄：
     //https://www.cnblogs.com/marchtea/archive/2011/12/04/2275534.html
     HANDLE hThread[m];
@@ -102,11 +99,12 @@ int main()
     auto t2=std::chrono::steady_clock::now();
     double time=std::chrono::duration<double,std::milli>(t2-t1).count();
     cout << "(time: " << time << "ms)" << endl;
-
+    }
+/*
     display_Matrix(A);
     display_Matrix(B);
     display_Matrix(C);
-
+*/
     delete [] A.datas;
     delete [] B.datas;
     delete [] C.datas;
@@ -175,8 +173,8 @@ void display_Matrix(const Matrix & A){
 }
 
 void initial_MatrixA(Matrix &A){
-    A.row = 4;
-    A.column = 3;
+    A.row = 1400;
+    A.column = 1400;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(int i = 0; i< A.total;i++){
@@ -185,8 +183,8 @@ void initial_MatrixA(Matrix &A){
 
 }
 void initial_MatrixB(Matrix &A){
-    A.row = 3;
-    A.column = 2;
+    A.row = 1400;
+    A.column = 1400;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(int i = 0; i< A.total;i++){
