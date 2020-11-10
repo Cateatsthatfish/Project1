@@ -1,12 +1,11 @@
-//su->speed up
 //from strct_multi.cpp
+//改变循环顺序：ijk->ikj
+//https://zhuanlan.zhihu.com/p/146250334
+
 /*
-
-假设矩阵B中的元素储存在datas[]中的时候是按照一列接着一列而不是一行一行的顺序以此为前提进行计算
-
-矩阵定位和数组定位:
+矩阵定位和数组定位
 A：m*n -> A(i,k)=datas[i*n+k]
-B：n*l -> B(k,j)=datas[j*n+k]
+B：n*l -> B(k,j)=datas[k*l+j]
 C: m*l -> C(i,j)=datas[i*l+j]
 */
 #include<chrono> //计算时间
@@ -19,48 +18,47 @@ struct Matrix{
     float * datas;
 };
 
-
-Matrix & multiplication_1(const Matrix & A, const Matrix & B, Matrix &C);
+Matrix & multiplication_reorder(const Matrix & A, const Matrix & B, Matrix &C);
 void display_Matrix(const Matrix & A);
-void display_MatrixB(const Matrix & A);
 void initial_MatrixA(Matrix &A);
 void initial_MatrixB(Matrix &A);
 
 int main(){
     ////////////initialization type 2 ->use set function
-    
     Matrix A;
     initial_MatrixA(A);
-    display_Matrix(A);
-    
+    //display_Matrix(A);
+
     Matrix B;
     initial_MatrixB(B);
-    display_MatrixB(B);
-    
+    //display_Matrix(B);
+
     Matrix C;
-    C = multiplication_1(A,B,C);
-    display_Matrix(C);
+    C = multiplication_reorder(A,B,C);
+    //display_Matrix(C);
     
-    /*
     for(int i = 0; i< 5; i++){
         cout << 1+i <<":";
-        C = multiplication(A,B,C);
+        C = multiplication_reorder(A,B,C);
     }
+    
+   /*
+   display_Matrix(A);
+   display_Matrix(B);
+   display_Matrix(C);
     */
-
-    //cout << "finished!" <<endl;
-   
+    cout << "finished!" <<endl;
+    //display_Matrix(C);
 
     delete [] A.datas;
-
     delete [] B.datas;
     delete [] C.datas;
 
-
+    //Matrix C = multiplication()
     return 0;
 }
 
-Matrix & multiplication_1(const Matrix & A, const Matrix & B, Matrix &C){
+Matrix & multiplication_reorder(const Matrix & A, const Matrix & B, Matrix &C){
 
     long long m = A.row;
     long long n = A.column;
@@ -72,14 +70,21 @@ Matrix & multiplication_1(const Matrix & A, const Matrix & B, Matrix &C){
 
     auto t1=std::chrono::steady_clock::now(); //开始时间
     for(long long i = 0; i < m ; i++ ){
+        for (long long k = 0; k< n; k++){
         for(long long j = 0; j < l; j++ ){
-            float temp = 0; 
-            for (long long k = 0; k< n; k++){
-                temp += A.datas[n*i+k] * B.datas[n*j+k];
-                cout << A.datas[n*i+k] << "*" << B.datas[n*j+k] << " + " ;
+
+            
+                //cout << "i="<< i << " j="<< j << " k= "<< k ;
+                // cout << " k+an*i: " << k+an*i << " j+bn*k: " << j+bn*k ;
+                //cout << "A["<< n*i+k << "] " << "B["<< l*k+j << "] ";
+
+                C.datas[l*i+j] += A.datas[n*i+k] * B.datas[l*k+j];
+                //cout << A.datas[n*i+k] << "*" << B.datas[l*k+j] << " + " ;
                 }
-                cout << " ->C["<< l*i+j << "]= "<<temp << endl; 
-                C.datas[l*i+j] = temp;  
+                //cout << " ->C["<< l*i+j << "]= "<<temp << endl;   
+
+                //cout << " j+ bn*i: " << j+ bn*i << endl;
+                 
         }
     }
     auto t2=std::chrono::steady_clock::now(); //结束时间
@@ -90,39 +95,31 @@ Matrix & multiplication_1(const Matrix & A, const Matrix & B, Matrix &C){
 
 }
 void display_Matrix(const Matrix & A){
-    for(int i = 0 ; i< A.total;i++){
-        cout << A.datas[i] << ",";
-    }
-    cout << endl;
+    /*
+    cout << "row = " << A.row << endl;
+    cout << "column =" << A.column << endl;
+    cout << "total = " << A.total << endl;
+    */
     long long n = A.column;
-    for(long long i = 0; i< A.row;i++){
-        for(long long j =0 ; j < A.column ; j++){
-        cout << A.datas[i*n+j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
-}
-
-void display_MatrixB(const Matrix & A){
-    for(int i = 0 ; i< A.total;i++){
-        cout << A.datas[i] << ",";
-    }
-    cout << endl;
-    long long n = A.row;
+    
     
     for(long long i = 0; i< A.row;i++){
         for(long long j =0 ; j < A.column ; j++){
-        cout << A.datas[j*n+i] << " ";
+        cout << A.datas[i*n+j] << "  ";
         }
         cout << endl;
     }
+    /*
+    for(int i = 0 ; i< A.total;i++){
+        cout << A.datas[i] << ",";
+    }
     cout << endl;
+    */
 }
 
 void initial_MatrixA(Matrix &A){
-    A.row =4;
-    A.column = 3;
+    A.row = 1400;
+    A.column = 1400;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){
@@ -130,25 +127,13 @@ void initial_MatrixA(Matrix &A){
     }
 
 }
-
-void initial_MatrixB(Matrix &B){
-    B.row = 3;
-    B.column = 2;
-    B.total = B.row * B.column;
-    B.datas = new float[B.total]();
-    /*
-    for(long long i = 0; i< B.total;i++){
-        B.datas[i] = i;
+void initial_MatrixB(Matrix &A){
+    A.row = 1400;
+    A.column = 1400;
+    A.total = A.row * A.column;
+    A.datas = new float[A.total]();
+    for(long long i = 0; i< A.total;i++){
+        A.datas[i] = i;
     }
-    */
-   int k = 0;
-    
-    for(long long i = 0; i < B.row;i++){
-        for(long long j = 0; j < B.column; j++){
-            B.datas[j*B.row+i] = k;
-            k++;
-        }
-    }
-   
 
 }
