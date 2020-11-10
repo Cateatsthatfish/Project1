@@ -2,5 +2,8 @@
 try/*.exe
 try/*.exe.stackdump
 try/*.json
-try/.vscode/settings.json
+try/.vscode/*.json
 learn/*.exe
+.vscode/settings.json
+try/.vscode/*.json
+try/.vscode/settings.json
