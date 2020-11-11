@@ -4,7 +4,7 @@ class candy{
     private:
     int number;
     public:
-    candy();
+    candy(){number = 1;}
     int setnum(int n){number = n; }
     int getnum(){return this->number;}
     //~candy();
