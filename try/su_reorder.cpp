@@ -71,6 +71,7 @@ Matrix & multiplication_reorder(const Matrix & A, const Matrix & B, Matrix &C){
     auto t1=std::chrono::steady_clock::now(); //开始时间
     for(long long i = 0; i < m ; i++ ){
         for (long long k = 0; k< n; k++){
+        if(A.datas[n*i+k]){
         for(long long j = 0; j < l; j++ ){
 
             
@@ -85,6 +86,7 @@ Matrix & multiplication_reorder(const Matrix & A, const Matrix & B, Matrix &C){
 
                 //cout << " j+ bn*i: " << j+ bn*i << endl;
                  
+        }
         }
     }
     auto t2=std::chrono::steady_clock::now(); //结束时间
