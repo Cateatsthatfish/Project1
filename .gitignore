@@ -7,4 +7,5 @@ learn/*.exe
 .vscode/settings.json
 try/.vscode/*.json
 try/.vscode/settings.json
-openblas/testMatrix.exe
+openblas/*.exe
+
