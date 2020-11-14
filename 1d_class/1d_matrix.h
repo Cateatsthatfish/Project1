@@ -5,23 +5,24 @@ using namespace std;
 
 class Matrix{
 private:
-    size_t _Row,_Column,_Total;
+    int _Row,_Column,_Total;
     float * _Matrix;
 
 public:
     Matrix():_Matrix(nullptr),_Row(0),_Column(0){}//默认构造
     //!
     // 初始化之前需要验证r,c的合理性
-    Matrix(size_t r,size_t c);//构造r行、c列的矩阵, 里面元素为随机数
-    Matrix(size_t r,size_t c,const float init);//构造r行、c列的矩阵, 里面元素为init
+    Matrix(int r,int c);//构造r行、c列的矩阵, 里面元素为随机数
+    Matrix(int r,int c,const float init);//构造r行、c列的矩阵, 里面元素为init
+    Matrix(const Matrix&B);
     ~Matrix(){
     if(!_Matrix) return;
     delete [] _Matrix;
     _Column = _Row = _Total = 0;
     };
     
-    float& operator()(size_t i,size_t j){return _Matrix[i*(_Column)+j];}
-    const float operator()(size_t i,size_t j)const{return _Matrix[i*(_Column)+j];}
+    float& operator()(int i,int j){return _Matrix[i*(_Column)+j];}
+    const float operator()(int i,int j)const{return _Matrix[i*(_Column)+j];}
     Matrix& operator=(Matrix&& B){
         if(_Matrix){
             delete [] _Matrix;
@@ -34,7 +35,7 @@ public:
     }
 
     void display();
-    void kernel(float*c, float *a , float*b, int row, int col);
+    void kernel(Matrix &c, float *a , float*b, int row, int col);
 
     //!
     // 相乘之前要验证相乘的条件
