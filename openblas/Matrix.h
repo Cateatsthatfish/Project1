@@ -2,8 +2,10 @@
 // 需要把double->int
 // malloc-> new
 #include <iostream>
+
 #include <cstdlib>
-#include <immintrin.h>
+#include "immintrin.h"
+//#include <immintrin.h>
 
 
 using namespace std;
@@ -22,14 +24,14 @@ class Matrix{
 
     Matrix(size_t r,size_t c):_Row(r),_Column(c){//构造r行、c列的矩阵
         if(!_Column||!_Row) return;
-        //?
+        //当column 或row = 0 时 return
         //如果return 下面这一行就不会cout，但是main也不会退出
         //cout <<"in constructor!" << endl;
-        //当column 或row = 0 时
+        //+
+        //优化和报错？
+        
 
         _Matrix=(double**)malloc(_Column*sizeof(double*));
-        //?
-        //_Matrix = (float**) malloc(_Column*sizeof(float*));
         //_Matrix 是一个二重指针, 长度为_Column
         //?
         //C++
@@ -76,6 +78,7 @@ class Matrix{
             }while(p!=end);
             //把每一个元素都赋值为init
         }while(pr!=endr);
+        
     }
     Matrix(const Matrix& B){//拷贝构造
         _Row=B._Row;
@@ -105,6 +108,7 @@ class Matrix{
             }while(pa!=enda);
         }while(par!=endar);
     }
+    // 如果没有这个拷贝构造，后面的所有return temp 都实现不了
     ~Matrix(){//析构
         if(!_Matrix) return;
         //?
@@ -134,10 +138,12 @@ class Matrix{
     double& operator()(size_t i,size_t j){return _Matrix[j][i];}//访问第i行、第j列的元素
     //?
     //返回地址？
+    //改写括号
     const double operator()(size_t i,size_t j)const{return _Matrix[j][i];}//访问第i行、第j列的元素
     //?
     //返回值？
     //只是能修改和不能修改的区别吗？
+    //改写括号
 
 
     Matrix& operator=(Matrix&& B){//移动赋值
@@ -151,6 +157,7 @@ class Matrix{
     //大概是因为B是要被销毁的吧
     //返回的Matrix& 又是什么？-》返回一个Matrix的对象的引用？
     //这个有什么用？
+    //重载等号
 
         if(_Matrix){
             double **p=_Matrix,**end=_Matrix+_Row;
@@ -253,7 +260,7 @@ class Matrix{
     // n = B._Row = this._Column
     // (4*n) * (n*4) = (4*4)
 
-    void multi4kernel(double **c,double **a,double **b,int row,int col){
+    void multi3kernel(double **c,double **a,double **b,int row,int col){
         // double **c = tmp_Matrix : 结果矩阵 (_Row, B._Column)
         // double **a = tr ： this_Matrix 的前四行(4,_Column)
         // double **b = B._Matrix ：输入的矩阵 (B._Row, B._Column)
@@ -281,7 +288,7 @@ class Matrix{
 
         double *a0(a[0]),*a1(a[1]),*a2(a[2]),*a3(a[3]),
                *b0(b[col]),*b1(b[col+1]),*b2(b[col+2]),*b3(b[col+3]),
-               *end=b0+_Row; 
+               *end=b0+_Column; 
         // 这里的a,b都是逐渐移动的类似坐标的东西
         
         // this._Matrix 的行（只有四行:j->j+3）
@@ -406,7 +413,7 @@ class Matrix{
 
             i=0;
             do{
-                multi4kernel(tmp._Matrix,tr,B._Matrix,j,i);
+                multi3kernel(tmp._Matrix,tr,B._Matrix,j,i);
 
                 // tmp._Matrix: _Row * B._Column；元素都为零的矩阵
                 // void multi4kernel(double **c,double **a,double **b,int row,int col)
@@ -428,6 +435,145 @@ class Matrix{
             j+=4;
             // j 的循环是纵向填满 tmp._Matrix 的每一列 
         }while(j<_Row);
+        return tmp;
+    }
+
+    void display_Matrix(){
+        for(int i = 0; i< _Row; i++){
+            for( int j = 0 ; j < _Column; j++){
+                cout << (*this)(i,j) << " ";
+            }
+            cout << endl;
+        }
+
+    }
+
+    //SIMD SSE 加速乘法的运算。
+    void multi5kernel(double **c,double **a,double **b,int row,int col){
+        __m128d t01_0,t01_1,t01_2,t01_3,t23_0,t23_1,t23_2,t23_3,
+                a0,a1,b0,b1,b2,b3;
+        t01_0=t01_1=t01_2=t01_3=t23_0=t23_1=t23_2=t23_3=_mm_set1_pd(0);
+        double *pb0(b[col]),*pb1(b[col+1]),*pb2(b[col+2]),*pb3(b[col+3]),*pa0(a[0]),*pa1(a[1]),*endb0=pb0+_Column;
+        do{
+            a0=_mm_load_pd(pa0);
+            a1=_mm_load_pd(pa1);
+            b0=_mm_set1_pd(*(pb0++));
+            b1=_mm_set1_pd(*(pb1++));
+            b2=_mm_set1_pd(*(pb2++));
+            b3=_mm_set1_pd(*(pb3++));
+            t01_0+=a0*b0;
+            t01_1+=a0*b1;
+            t01_2+=a0*b2;
+            t01_3+=a0*b3;
+            t23_0+=a1*b0;
+            t23_1+=a1*b1;
+            t23_2+=a1*b2;
+            t23_3+=a1*b3;
+            pa0+=2;
+            pa1+=2;
+        }while(pb0!=endb0);
+        _mm_store_pd(&c[col][row],t01_0);
+        _mm_store_pd(&c[col+1][row],t01_1);
+        _mm_store_pd(&c[col+2][row],t01_2);
+        _mm_store_pd(&c[col+3][row],t01_3);
+        _mm_store_pd(&c[col][row+2],t23_0);
+        _mm_store_pd(&c[col+1][row+2],t23_1);
+        _mm_store_pd(&c[col+2][row+2],t23_2);
+        _mm_store_pd(&c[col+3][row+2],t23_3);
+    }
+    Matrix multi5(const Matrix &B){
+        if(_Column!=B._Row) return *this;
+        Matrix tmp(_Row,B._Column,0);
+        double *ta[2];
+        ta[0]=(double*)malloc(sizeof(double)*2*_Column);
+        ta[1]=(double*)malloc(sizeof(double)*2*_Column);
+        tb=(double*)malloc(sizeof(double)*4*B._Row);
+        end=tb+4*B._Row;
+        int i(0),j(0),k,t;
+        do{
+            k=0;i=0;
+            do{
+                ta[0][k]=_Matrix[i][j];
+                ta[1][k++]=_Matrix[i][j+2];
+                ta[0][k]=_Matrix[i][j+1];
+                ta[1][k++]=_Matrix[i++][j+3];
+            }while(i<_Column);
+            i=0;
+            do{
+                multi5kernel(tmp._Matrix,ta,B._Matrix,j,i);
+                i+=4;
+            }while(i<B._Column);
+            j+=4;
+        }while(j<_Row);
+        free(tb);
+        free(ta[0]);
+        free(ta[1]);
+        return tmp;
+    }
+
+
+    //AVX2.0
+    //使用AVX2.0可以一次处理256bit的数据，即4个双精度浮点数
+void multi6kernel(double **c,double **a,double **b,int row,int col){
+        __m256d t04_0,t04_1,t04_2,t04_3,t58_0,t58_1,t58_2,t58_3,
+                a0,a1,b0,b1,b2,b3;
+        t04_0=t04_1=t04_2=t04_3=t58_0=t58_1=t58_2=t58_3=_mm256_set1_pd(0);
+        double *pb0(b[col]),*pb1(b[col+1]),*pb2(b[col+2]),*pb3(b[col+3]),*pa0(a[0]),*pa1(a[1]),*endb0=pb0+_Column;
+        do{
+            a0=_mm256_loadu_pd(pa0);
+            a1=_mm256_loadu_pd(pa1);
+            b0=_mm256_set1_pd(*(pb0++));
+            b1=_mm256_set1_pd(*(pb1++));
+            b2=_mm256_set1_pd(*(pb2++));
+            b3=_mm256_set1_pd(*(pb3++));
+            t04_0+=a0*b0;
+            t04_1+=a0*b1;
+            t04_2+=a0*b2;
+            t04_3+=a0*b3;
+            t58_0+=a1*b0;
+            t58_1+=a1*b1;
+            t58_2+=a1*b2;
+            t58_3+=a1*b3;
+            pa0+=4;
+            pa1+=4;
+        }while(pb0!=endb0);
+        _mm256_storeu_pd(&c[col][row],t04_0);
+        _mm256_storeu_pd(&c[col+1][row],t04_1);
+        _mm256_storeu_pd(&c[col+2][row],t04_2);
+        _mm256_storeu_pd(&c[col+3][row],t04_3);
+        _mm256_storeu_pd(&c[col][row+4],t58_0);
+        _mm256_storeu_pd(&c[col+1][row+4],t58_1);
+        _mm256_storeu_pd(&c[col+2][row+4],t58_2);
+        _mm256_storeu_pd(&c[col+3][row+4],t58_3);
+    }
+    Matrix multi6(const Matrix &B){
+        if(_Column!=B._Row) return *this;
+        Matrix tmp(_Row,B._Column,0);
+        double *ta[2];
+        ta[0]=(double*)malloc(sizeof(double)*4*_Column);
+        ta[1]=(double*)malloc(sizeof(double)*4*_Column);
+        int i(0),j(0),k,t;
+        do{
+            k=0;i=0;
+            do{
+                ta[0][k]=_Matrix[i][j];
+                ta[1][k++]=_Matrix[i][j+4];
+                ta[0][k]=_Matrix[i][j+1];
+                ta[1][k++]=_Matrix[i][j+5];
+                ta[0][k]=_Matrix[i][j+2];
+                ta[1][k++]=_Matrix[i][j+6];
+                ta[0][k]=_Matrix[i][j+3];
+                ta[1][k++]=_Matrix[i++][j+7];
+            }while(i<_Column);
+            i=0;
+            do{
+                multi6kernel(tmp._Matrix,ta,B._Matrix,j,i);
+                i+=4;
+            }while(i<B._Column);
+            j+=8;
+        }while(j<_Row);
+        free(ta[0]);
+        free(ta[1]);
         return tmp;
     }
 };
