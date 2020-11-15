@@ -4,8 +4,8 @@
 #include <iostream>
 
 #include <cstdlib>
-#include "immintrin.h"
-//#include <immintrin.h>
+//#include "immintrin.h"
+#include <immintrin.h>
 
 
 using namespace std;
@@ -78,6 +78,7 @@ class Matrix{
             }while(p!=end);
             //把每一个元素都赋值为init
         }while(pr!=endr);
+        _Matrix[0][2] = 3;
         
     }
     Matrix(const Matrix& B){//拷贝构造
@@ -449,18 +450,57 @@ class Matrix{
     }
 
     //SIMD SSE 加速乘法的运算。
-    void multi5kernel(double **c,double **a,double **b,int row,int col){
+    //https://www.cnblogs.com/wangguchangqing/p/5466301.html
+/*note
+1. SSE指令集正如其名字 Streaming SIMD Extensions，最强大的是其能够在一条指令并行的对多个操作数进行相同的运算，根据操作数长度和寄存器长度的不同能够同时运算的个数也不同。
+以32位有符号整数为例，128位寄存器（也是最常用的SSE指令集的寄存器）能够同时运算4个；AVX指令集的256位寄存器能够同时运算8个；AVX-512 的512位寄存器能够同时运算16个。
+2. 在使用SSE指令时要特别主要操作数的类型，整型则要区分是有符号还是无符号；浮点数则注意其精度是单精度还是双精度
+3. 另外就是操作数的长度。即使是同样的128位二进制串，根据其类型和长度也有多种不同的解释。
+4. 前面多次提到，编译器的优化能力是很强的，不要刻意的使用SSE指令优化。而在要必须使用SSE的时候，要谨记SSE的强大之处是其并行能力。   
+*/
+    
+    void multi4kernel(double **c,double **a,double **b,int row,int col){
+        // double ** c 
         __m128d t01_0,t01_1,t01_2,t01_3,t23_0,t23_1,t23_2,t23_3,
                 a0,a1,b0,b1,b2,b3;
+        //_m128d : 128位紧缩双精度（SSE2）
+        //_m128 :  128位紧缩单精度（AVX）
         t01_0=t01_1=t01_2=t01_3=t23_0=t23_1=t23_2=t23_3=_mm_set1_pd(0);
-        double *pb0(b[col]),*pb1(b[col+1]),*pb2(b[col+2]),*pb3(b[col+3]),*pa0(a[0]),*pa1(a[1]),*endb0=pb0+_Column;
+        //__m128d _mm_set1_pd (double a)
+        //#include <emmintrin.h>
+        //SSE2
+        //Broadcast double-precision (64-bit) floating-point value a to all elements of dst.
+
+        //__m128 _mm_set1_ps (float a)
+        //#include <xmmintrin.h>
+        //SSE
+        //Broadcast single-precision (32-bit) floating-point value a to all elements of dst.
+        double *pb0(b[col]),*pb1(b[col+1]),*pb2(b[col+2]),*pb3(b[col+3]),
+                *pa0(a[0]),*pa1(a[1]),
+                *endb0=pb0+_Column;
         do{
             a0=_mm_load_pd(pa0);
             a1=_mm_load_pd(pa1);
+            //__m128d _mm_load_pd (double const* mem_addr)
+            //<emmintrin.h>
+            //SSE2
+            //Load 128-bits (composed of 2 packed double-precision (64-bit) floating-point elements) 
+            //from memory into dst. mem_addr :内存-》寄存器
+            //must be aligned on a 16-byte boundary or a general-protection exception may be generated.
+
+            //__m128 _mm_load_ps (float const* mem_addr)
+            //<xmmintrin.h>
+            //SSE
+            //Load 128-bits (composed of 4 packed single-precision (32-bit) floating-point elements)
+            //from memory into dst. mem_addr :内存-》寄存器
+            //must be aligned on a 16-byte boundary or a general-protection exception may be generated.
+            
             b0=_mm_set1_pd(*(pb0++));
             b1=_mm_set1_pd(*(pb1++));
             b2=_mm_set1_pd(*(pb2++));
             b3=_mm_set1_pd(*(pb3++));
+            //*pb0->b0
+/*
             t01_0+=a0*b0;
             t01_1+=a0*b1;
             t01_2+=a0*b2;
@@ -469,6 +509,16 @@ class Matrix{
             t23_1+=a1*b1;
             t23_2+=a1*b2;
             t23_3+=a1*b3;
+*/
+            t01_0 = _mm_add_pd(t01_0,_mm_mul_pd(a0,b0));
+            t01_1 = _mm_add_pd(t01_1,_mm_mul_pd(a0,b1));
+            t01_2 = _mm_add_pd(t01_2,_mm_mul_pd(a0,b2));
+            t01_3 = _mm_add_pd(t01_3,_mm_mul_pd(a0,b3));
+            t23_0 = _mm_add_pd(t23_0,_mm_mul_pd(a1,b0));
+            t23_1 = _mm_add_pd(t23_1,_mm_mul_pd(a1,b1));
+            t23_2 = _mm_add_pd(t23_2,_mm_mul_pd(a1,b2));
+            t23_3 = _mm_add_pd(t23_3,_mm_mul_pd(a1,b3));
+
             pa0+=2;
             pa1+=2;
         }while(pb0!=endb0);
@@ -480,31 +530,57 @@ class Matrix{
         _mm_store_pd(&c[col+1][row+2],t23_1);
         _mm_store_pd(&c[col+2][row+2],t23_2);
         _mm_store_pd(&c[col+3][row+2],t23_3);
+
+        //void _mm_store_pd (double* mem_addr, __m128d a)
+        //#include <emmintrin.h>
+        //SSE2
+        //Store 128-bits (composed of 2 packed double-precision (64-bit) floating-point elements) 
+        //from a into memory. mem_addr 
+        //must be aligned on a 16-byte boundary or a general-protection exception may be generated.
     }
-    Matrix multi5(const Matrix &B){
+    Matrix multi4(const Matrix &B){
+        // A: M*N    B: N*P    C: M*P
+        // M: _Row
+        // N: _Column = B._Row
+        // P: B._Column
+
         if(_Column!=B._Row) return *this;
         Matrix tmp(_Row,B._Column,0);
         double *ta[2];
         ta[0]=(double*)malloc(sizeof(double)*2*_Column);
         ta[1]=(double*)malloc(sizeof(double)*2*_Column);
-        tb=(double*)malloc(sizeof(double)*4*B._Row);
-        end=tb+4*B._Row;
+        double* tb=(double*)malloc(sizeof(double)*4*B._Row);
+        double* end=tb+4*B._Row;
+        //tb 的尾部
         int i(0),j(0),k,t;
         do{
             k=0;i=0;
             do{
-                ta[0][k]=_Matrix[i][j];
-                ta[1][k++]=_Matrix[i][j+2];
-                ta[0][k]=_Matrix[i][j+1];
-                ta[1][k++]=_Matrix[i++][j+3];
+                ta[0][k]=_Matrix[i][j];       //A(j.i)
+                ta[1][k++]=_Matrix[i][j+2];   //A(j+2.i)
+                ta[0][k]=_Matrix[i][j+1];     //A(j+1.i)
+                ta[1][k++]=_Matrix[i++][j+3]; //A(j+3.i)
+                
+                // j = 0
+                // i : 0->N-1
+                //(0,0): A(0,0)
+                //ta[0]: (0,0) (1,0) (0,1) (1,1) ... (j,i) (j+1,i) ... (0,N-1) (1,N-1) 
+                //ta[1]: (2,0) (3,0) (2,1) (3,1) ... (j+2,i) (j+3,i) ... (2,N-1) (3,N-1)
+
+
             }while(i<_Column);
+
             i=0;
             do{
-                multi5kernel(tmp._Matrix,ta,B._Matrix,j,i);
+                multi4kernel(tmp._Matrix,ta,B._Matrix,j,i);
+                // i: 0->P-1 
+                // j: 0->M-1 
+
                 i+=4;
             }while(i<B._Column);
             j+=4;
         }while(j<_Row);
+
         free(tb);
         free(ta[0]);
         free(ta[1]);
@@ -514,11 +590,13 @@ class Matrix{
 
     //AVX2.0
     //使用AVX2.0可以一次处理256bit的数据，即4个双精度浮点数
-void multi6kernel(double **c,double **a,double **b,int row,int col){
+void multi5kernel(double **c,double **a,double **b,int row,int col){
         __m256d t04_0,t04_1,t04_2,t04_3,t58_0,t58_1,t58_2,t58_3,
                 a0,a1,b0,b1,b2,b3;
         t04_0=t04_1=t04_2=t04_3=t58_0=t58_1=t58_2=t58_3=_mm256_set1_pd(0);
-        double *pb0(b[col]),*pb1(b[col+1]),*pb2(b[col+2]),*pb3(b[col+3]),*pa0(a[0]),*pa1(a[1]),*endb0=pb0+_Column;
+        double *pb0(b[col]),*pb1(b[col+1]),*pb2(b[col+2]),*pb3(b[col+3]),
+                *pa0(a[0]),*pa1(a[1]),
+                *endb0=pb0+_Column;
         do{
             a0=_mm256_loadu_pd(pa0);
             a1=_mm256_loadu_pd(pa1);
@@ -526,6 +604,7 @@ void multi6kernel(double **c,double **a,double **b,int row,int col){
             b1=_mm256_set1_pd(*(pb1++));
             b2=_mm256_set1_pd(*(pb2++));
             b3=_mm256_set1_pd(*(pb3++));
+            /*
             t04_0+=a0*b0;
             t04_1+=a0*b1;
             t04_2+=a0*b2;
@@ -534,6 +613,16 @@ void multi6kernel(double **c,double **a,double **b,int row,int col){
             t58_1+=a1*b1;
             t58_2+=a1*b2;
             t58_3+=a1*b3;
+            */
+
+            t04_0 = _mm256_add_pd(t04_0,_mm256_mul_pd(a0,b0));
+            t04_1 = _mm256_add_pd(t04_1,_mm256_mul_pd(a0,b1));
+            t04_2 = _mm256_add_pd(t04_2,_mm256_mul_pd(a0,b2));
+            t04_3 = _mm256_add_pd(t04_3,_mm256_mul_pd(a0,b3));
+            t58_0 = _mm256_add_pd(t58_0,_mm256_mul_pd(a1,b0));
+            t58_1 = _mm256_add_pd(t58_1,_mm256_mul_pd(a1,b1));
+            t58_2 = _mm256_add_pd(t58_2,_mm256_mul_pd(a1,b2));
+            t58_3 = _mm256_add_pd(t58_3,_mm256_mul_pd(a1,b3));            
             pa0+=4;
             pa1+=4;
         }while(pb0!=endb0);
@@ -546,7 +635,7 @@ void multi6kernel(double **c,double **a,double **b,int row,int col){
         _mm256_storeu_pd(&c[col+2][row+4],t58_2);
         _mm256_storeu_pd(&c[col+3][row+4],t58_3);
     }
-    Matrix multi6(const Matrix &B){
+    Matrix multi5(const Matrix &B){
         if(_Column!=B._Row) return *this;
         Matrix tmp(_Row,B._Column,0);
         double *ta[2];
@@ -567,7 +656,7 @@ void multi6kernel(double **c,double **a,double **b,int row,int col){
             }while(i<_Column);
             i=0;
             do{
-                multi6kernel(tmp._Matrix,ta,B._Matrix,j,i);
+                multi5kernel(tmp._Matrix,ta,B._Matrix,j,i);
                 i+=4;
             }while(i<B._Column);
             j+=8;
