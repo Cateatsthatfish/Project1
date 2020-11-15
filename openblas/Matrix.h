@@ -78,7 +78,8 @@ class Matrix{
             }while(p!=end);
             //把每一个元素都赋值为init
         }while(pr!=endr);
-        _Matrix[0][2] = 3;
+        //_Matrix[0][2] = -1;
+        //发现会影响 return tmp
         
     }
     Matrix(const Matrix& B){//拷贝构造
@@ -110,6 +111,7 @@ class Matrix{
         }while(par!=endar);
     }
     // 如果没有这个拷贝构造，后面的所有return temp 都实现不了
+    //? 为什么
     ~Matrix(){//析构
         if(!_Matrix) return;
         //?
@@ -185,15 +187,20 @@ class Matrix{
     Matrix multi1(const Matrix &B){
         
         if(_Column!=B._Row) return *this;
+            
+        //cout << "infunction" << endl;
         //判断是否可以相乘
         //这里返回的是克隆
         Matrix tmp(_Row,B._Column,0);
         //结果函数
         //全部赋值为0
-        int i,j(0),k;
+        //int i,j(0),k;
         //? 为什么j=0?
         //? do while 和for 循环有差别吗？
 
+        //jik
+
+        /*
         do{
             i=0;
             do{
@@ -208,20 +215,21 @@ class Matrix{
             }while(i<_Row);
             j++;
         }while(j<B._Column);
-
-        /* 用for循环写的
-
-        for(int j=0; j<B._Column; j++){
-            for(int i = 0; i<B._Row; i++){
-                for(int k = 0; k < _Column; k++){
-                    tmp(i,j)+=(*this)(i,k)*B(k,j);
-                    
-                }
-            }
-
-        }
         */
 
+         //用for循环写的
+
+        for(int j=0; j<B._Column; j++){
+            //cout << "in loop" << endl;
+            for(int i = 0; i< _Row; i++){
+                //cout << "tmp("<< i << "," <<j<<" )=" << " ";
+                for(int k = 0; k < _Column; k++){
+                    //cout << (*this)(i,k) <<"*"<< B(k,j) << "+";
+                    tmp(i,j)+=(*this)(i,k)*B(k,j);                    
+                }
+                //cout << endl;
+            }
+        }      
 
         return tmp;
     }
@@ -460,12 +468,23 @@ class Matrix{
 */
     
     void multi4kernel(double **c,double **a,double **b,int row,int col){
-        // double ** c 
-        __m128d t01_0,t01_1,t01_2,t01_3,t23_0,t23_1,t23_2,t23_3,
-                a0,a1,b0,b1,b2,b3;
+        /*
+        // double ** c : tmp._Matrix  
+        // double ** a : ta (A/this 的前四行) 
+        // double ** b : B._Matrix
+        // int row = j : 0-> M-1
+        // int col = i : 0-> P-1
+        // ta[0]: A的j,j+1行（一维数组，元素竖着放入）
+        // ta[1]: A的j+2,j+3行（一维数组，元素竖着放入）
+        */
+        __m128d t01_0,t01_1,t01_2,t01_3,
+                t23_0,t23_1,t23_2,t23_3,
+                a0,a1,
+                b0,b1,b2,b3;
         //_m128d : 128位紧缩双精度（SSE2）
         //_m128 :  128位紧缩单精度（AVX）
         t01_0=t01_1=t01_2=t01_3=t23_0=t23_1=t23_2=t23_3=_mm_set1_pd(0);
+        /*
         //__m128d _mm_set1_pd (double a)
         //#include <emmintrin.h>
         //SSE2
@@ -475,12 +494,23 @@ class Matrix{
         //#include <xmmintrin.h>
         //SSE
         //Broadcast single-precision (32-bit) floating-point value a to all elements of dst.
+        */
+
         double *pb0(b[col]),*pb1(b[col+1]),*pb2(b[col+2]),*pb3(b[col+3]),
                 *pa0(a[0]),*pa1(a[1]),
                 *endb0=pb0+_Column;
+        // 指针列表
+        // *pb0 : B (0->N-1, i)
+        // *pb3 : B (0->N-1, i+3)
+        //?
+        // *pa0 : ta[0][0->2*N-1]
+        // *pa1 : ta[1][0->2*N-1]
+        
         do{
             a0=_mm_load_pd(pa0);
             a1=_mm_load_pd(pa1);
+                      
+            /*
             //__m128d _mm_load_pd (double const* mem_addr)
             //<emmintrin.h>
             //SSE2
@@ -494,22 +524,14 @@ class Matrix{
             //Load 128-bits (composed of 4 packed single-precision (32-bit) floating-point elements)
             //from memory into dst. mem_addr :内存-》寄存器
             //must be aligned on a 16-byte boundary or a general-protection exception may be generated.
+            */
             
             b0=_mm_set1_pd(*(pb0++));
             b1=_mm_set1_pd(*(pb1++));
             b2=_mm_set1_pd(*(pb2++));
             b3=_mm_set1_pd(*(pb3++));
             //*pb0->b0
-/*
-            t01_0+=a0*b0;
-            t01_1+=a0*b1;
-            t01_2+=a0*b2;
-            t01_3+=a0*b3;
-            t23_0+=a1*b0;
-            t23_1+=a1*b1;
-            t23_2+=a1*b2;
-            t23_3+=a1*b3;
-*/
+            
             t01_0 = _mm_add_pd(t01_0,_mm_mul_pd(a0,b0));
             t01_1 = _mm_add_pd(t01_1,_mm_mul_pd(a0,b1));
             t01_2 = _mm_add_pd(t01_2,_mm_mul_pd(a0,b2));
@@ -517,19 +539,31 @@ class Matrix{
             t23_0 = _mm_add_pd(t23_0,_mm_mul_pd(a1,b0));
             t23_1 = _mm_add_pd(t23_1,_mm_mul_pd(a1,b1));
             t23_2 = _mm_add_pd(t23_2,_mm_mul_pd(a1,b2));
-            t23_3 = _mm_add_pd(t23_3,_mm_mul_pd(a1,b3));
+            t23_3 = _mm_add_pd(t23_3,_mm_mul_pd(a1,b3));              
 
             pa0+=2;
             pa1+=2;
+        
+            // j=0 , i=0
+            // a0=A(0,0)  a1=A(2,0)
+            // b0=B(0,0)  b1=B(0,1)  b2=B(0,2)  b3=B(0,3)
+            // t01_0 += a0*b0
         }while(pb0!=endb0);
-        _mm_store_pd(&c[col][row],t01_0);
-        _mm_store_pd(&c[col+1][row],t01_1);
-        _mm_store_pd(&c[col+2][row],t01_2);
-        _mm_store_pd(&c[col+3][row],t01_3);
-        _mm_store_pd(&c[col][row+2],t23_0);
-        _mm_store_pd(&c[col+1][row+2],t23_1);
-        _mm_store_pd(&c[col+2][row+2],t23_2);
-        _mm_store_pd(&c[col+3][row+2],t23_3);
+        
+        _mm_store_pd(&c[col][row],t01_0);     //(j,i)
+        _mm_store_pd(&c[col+1][row],t01_1);   //(j,i+1)
+        _mm_store_pd(&c[col+2][row],t01_2);   //(j,i+2)
+        _mm_store_pd(&c[col+3][row],t01_3);   //(j,i+3)
+        _mm_store_pd(&c[col][row+2],t23_0);   //(j+2,i)
+        _mm_store_pd(&c[col+1][row+2],t23_1); //(j+2,i+1)
+        _mm_store_pd(&c[col+2][row+2],t23_2); //(j+2,i+2)
+        _mm_store_pd(&c[col+3][row+2],t23_3); //(j+2,i+3)
+        
+        // row = j ; col = i
+        // C: 第j行
+        // t01_0 t01_1 t01_2 t01_3
+        // C：第j+2行
+        // t23_0 t23_1 t23_2 t23_3
 
         //void _mm_store_pd (double* mem_addr, __m128d a)
         //#include <emmintrin.h>
@@ -549,8 +583,8 @@ class Matrix{
         double *ta[2];
         ta[0]=(double*)malloc(sizeof(double)*2*_Column);
         ta[1]=(double*)malloc(sizeof(double)*2*_Column);
-        double* tb=(double*)malloc(sizeof(double)*4*B._Row);
-        double* end=tb+4*B._Row;
+        //double* tb=(double*)malloc(sizeof(double)*4*B._Row);
+        //double* end=tb+4*B._Row;
         //tb 的尾部
         int i(0),j(0),k,t;
         do{
@@ -567,7 +601,8 @@ class Matrix{
                 //ta[0]: (0,0) (1,0) (0,1) (1,1) ... (j,i) (j+1,i) ... (0,N-1) (1,N-1) 
                 //ta[1]: (2,0) (3,0) (2,1) (3,1) ... (j+2,i) (j+3,i) ... (2,N-1) (3,N-1)
 
-
+                // j = 4
+                // i : 0->N-1
             }while(i<_Column);
 
             i=0;
@@ -581,7 +616,7 @@ class Matrix{
             j+=4;
         }while(j<_Row);
 
-        free(tb);
+        //free(tb);
         free(ta[0]);
         free(ta[1]);
         return tmp;
