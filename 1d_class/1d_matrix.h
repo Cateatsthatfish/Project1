@@ -9,7 +9,7 @@ private:
     float * _Matrix;
 
 public:
-    Matrix():_Matrix(nullptr),_Row(0),_Column(0){}//默认构造
+    Matrix():_Matrix(nullptr),_Row(0),_Column(0),_Total(0){}//默认构造
     //!
     // 初始化之前需要验证r,c的合理性
     Matrix(int r,int c);//构造r行、c列的矩阵, 里面元素为随机数
@@ -39,6 +39,14 @@ public:
 
     //!
     // 相乘之前要验证相乘的条件
-    Matrix multi(const Matrix &B);
+    Matrix multi_ijk(const Matrix &B);
+    Matrix multi_ikj(const Matrix &B);
+    //https://blog.csdn.net/artorias123/article/details/86527456
+    Matrix multi_block(const Matrix &B);
+    //https://blog.csdn.net/qq_40515692/article/details/106749232
+    Matrix multi_4line(const Matrix &B);
+    Matrix multi_4Revs(const Matrix &B);
 
 };
+
+bool isValid_int(string in);
