@@ -10,3 +10,5 @@ try/.vscode/settings.json
 openblas/*.exe
 openblas/*.exe.stackdump
 1d_class/*.exe
+1d_class/.vscode/settings.json
+try/.vscode/settings.json
