@@ -12,3 +12,4 @@ openblas/*.exe.stackdump
 1d_class/*.exe
 1d_class/.vscode/settings.json
 try/.vscode/settings.json
+1d_class/1d_matrix.exe.stackdump
