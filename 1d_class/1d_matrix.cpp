@@ -5,7 +5,7 @@
 #include "1d_matrix.h"
 #include <string>
 
-//#pragma GCC optimize(3, "Ofast", "inline")
+#pragma GCC optimize(3, "Ofast", "inline")
 
 const int n = 1000;
 const size_t N1 = 4;
@@ -39,24 +39,19 @@ int main(){
     n1 = atoi(n1_in.c_str());
 */
 
-
-
-    Matrix A(n,n,1),B(n,n,2);
+//    Matrix A(n,n,1),B(n,n,2);
     Matrix A(N1,N2,1),B(N2,N1,2);
-//  A.display();
-//  B.display();
+//    Matrix A(N1,N2),B(N2,N1);
+cout << "A:" << endl;
+  A.display();
+  cout << "B:" << endl;
+  B.display();
 
-
-
-    /*
-    Matrix C = A.multi(B);
-    C.display();
-    */
-
- 
 //---------------------------------multi1--------------------------------
+    cout << "multi_ijk:   " ;
+    cout << endl;
     auto t1=std::chrono::steady_clock::now(); 
-//    cout << "multi1" <<endl;
+
 //    A.multi1(B);
     Matrix C1 = A.multi_ijk(B);
     auto t2=std::chrono::steady_clock::now(); //结束时间
@@ -66,7 +61,10 @@ int main(){
     C1.display();
 
 //---------------------------------multi2--------------------------------
-    auto t3=std::chrono::steady_clock::now(); 
+    cout << "multi_ikj:   " ;
+    cout << endl;
+    auto t3=std::chrono::steady_clock::now();
+ 
 //    A.multi2(B); 
     Matrix C2 =  A.multi_ikj(B);
     auto t4=std::chrono::steady_clock::now(); //结束时间
@@ -77,9 +75,12 @@ int main(){
     
 
 //---------------------------------multi3--------------------------------
+    cout << "multi_block: " ; 
+    cout << endl;
 //   for(int i =0; i< 5 ; i++){
-    auto t5=std::chrono::steady_clock::now(); 
-//    A.multi3(B);
+    auto t5=std::chrono::steady_clock::now();
+     
+//    A.multi_block(B);
     Matrix C3 = A.multi_block(B);
     auto t6=std::chrono::steady_clock::now(); //结束时间
     double time3=std::chrono::duration<double,std::milli>(t6-t5).count();
@@ -91,6 +92,8 @@ int main(){
 
 
 //---------------------------------multi4--------------------------------
+    cout << "multi_4line: " ;
+    cout << endl;
 //   for(int i =0; i< 5 ; i++){
     auto t7=std::chrono::steady_clock::now(); 
     //A.multi5(B);
@@ -105,6 +108,8 @@ int main(){
 
 
 //---------------------------------multi5--------------------------------
+    cout << "multi_4Revs: " ;
+    cout << endl;
 //   for(int i =0; i< 5 ; i++){
     auto t9=std::chrono::steady_clock::now(); 
     //A.multi6(B);
