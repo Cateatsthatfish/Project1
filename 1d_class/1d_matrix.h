@@ -1,6 +1,5 @@
-// 2020.11.14
-// from test_1d.cpp
-
+#ifndef MATRIX1_H_
+#define MATRIX1_H_
 using namespace std;
 
 class Matrix{
@@ -50,3 +49,5 @@ public:
 };
 
 bool isValid_int(string in);
+
+#endif
