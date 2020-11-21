@@ -13,3 +13,15 @@ openblas/*.exe.stackdump
 1d_class/.vscode/settings.json
 try/.vscode/settings.json
 1d_class/1d_matrix.exe.stackdump
+try/.vscode/settings.json
+try/1d_class/.vscode/settings.json
+try/.vscode/settings.json
+try/openblas/*.exe
+try/openblas/*.exe.stackdump
+try/learn/*.exe
+try/learn/*.exe.stackdump
+try/1d_class/*.exe
+try/1d_class/*.exe.stackdump
+*.exe
+*.exe.stackdump
+*.json
