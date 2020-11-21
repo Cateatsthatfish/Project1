@@ -73,13 +73,13 @@ Matrix & multiplication_1(const Matrix & A, const Matrix & B, Matrix &C){
     auto t1=std::chrono::steady_clock::now(); //开始时间
     for(long long i = 0; i < m ; i++ ){
         for(long long j = 0; j < l; j++ ){
-            float temp = 0; 
+            //float temp = 0; 
             for (long long k = 0; k< n; k++){
-                temp += A.datas[n*i+k] * B.datas[n*j+k];
+                C.datas[l*i+j] += A.datas[n*i+k] * B.datas[n*j+k];
                 //cout << A.datas[n*i+k] << "*" << B.datas[n*j+k] << " + " ;
                 }
                 //cout << " ->C["<< l*i+j << "]= "<<temp << endl; 
-                C.datas[l*i+j] = temp;  
+                 
         }
     }
     auto t2=std::chrono::steady_clock::now(); //结束时间

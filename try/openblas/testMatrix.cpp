@@ -2,13 +2,13 @@
 #include<chrono> 
 #include <cstdlib>
 #include <immintrin.h>
-#include "Matrix.h"
-//#include "my_Matrix.h"
+//#include "Matrix.h"
+#include "my_Matrix.h"
 //#pragma GCC optimize(3, "Ofast", "inline") 
 
 using namespace std;
 
-#define N 8
+#define N 1000
 const size_t N1 = 4;
 const size_t N2 = 8;
 int main(int argc,char* argv[]){
@@ -20,13 +20,15 @@ int main(int argc,char* argv[]){
 //    Matrix A(N,N,1),B(N,N,2);
 	Matrix A(N1,N2,1),B(N2,N1,2);
     //Matrix B(N1,N2,1),A(N2,N1,2);
-
-    A.display_Matrix();
+/*    A.display_Matrix();
     cout << endl;
     B.display_Matrix();
-/*  
+*/    
+
+  
 //---------------------------------multi1--------------------------------
     auto t1=std::chrono::steady_clock::now(); 
+    cout << "multi1" <<endl;
 //    A.multi1(B);
     Matrix C1 = A.multi1(B);
     auto t2=std::chrono::steady_clock::now(); //结束时间
@@ -59,24 +61,25 @@ int main(int argc,char* argv[]){
 //   }
 
     C3.display_Matrix();
-*/
 
-/*
+
+/**/
 //---------------------------------multi4--------------------------------
 //   for(int i =0; i< 5 ; i++){
     auto t7=std::chrono::steady_clock::now(); 
     //A.multi5(B);
-     Matrix C4 = A.multi4(B);
+    Matrix C4 = A.multi4(B);
    
     auto t8=std::chrono::steady_clock::now(); //结束时间
     double time4=std::chrono::duration<double,std::milli>(t8-t7).count();
     cout << "(time: " << time4 << "ms)" << endl;
 //   }
-    C4.display_Matrix();
+   C4.display_Matrix();
 
 
 /**/
 
+/*
 //---------------------------------multi5--------------------------------
 //   for(int i =0; i< 5 ; i++){
     auto t9=std::chrono::steady_clock::now(); 

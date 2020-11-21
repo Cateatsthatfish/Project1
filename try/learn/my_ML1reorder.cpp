@@ -1,17 +1,13 @@
 /*
-与my_multiline.cpp对比：long long -> int
-A(4\*3) , B(3\*2), C(4\*2)
-my_multiline.cpp：
-(time: 1.4438ms)
-(time: 1.7045ms)
-(time: 1.4438ms)
-test_int:
-(time: 0.6332ms)
-(time: 0.5133ms)
-(time: 0.5133ms)
+https://blog.csdn.net/qq_40515692/article/details/106749232
+others_multiline1.cpp的优化版本
+B[k*P+j]->B[j*P+k]
+
+
 */
 
-#include <windows.h> //多线程
+
+#include <windows.h> //多线程头文件
 #include <iostream>
 #include <ctime>
 #include <chrono>  // 计算时间
@@ -31,12 +27,31 @@ struct MYDATA {
     int P, N;
 };
 
+/*
+DWORD ThreadProc(LPVOID IpParam) {
+    MYDATA *pmd = (MYDATA *) IpParam;
+    float *A = pmd->A, *B = pmd->B, *C = pmd->C;
+    int begin = pmd->begin, end = pmd->end, P = pmd->P, N = pmd->N;
 
-//?
+
+
+    for (int index = begin; index < end; index++) {
+        int i = index / P, j = index % P;
+        C[i * P + j] = 0;
+        for (int k = 0; k < N; ++k) {
+            C[i * P + j] += A[i * N + k] * revB[j * P + k];
+        }
+    }
+    delete[]revB;
+    return 0;
+}
+*/
+
 DWORD ThreadProc(LPVOID IpParam) { 
     MYDATA *pmd = (MYDATA *) IpParam;
     float *A = pmd->A, *B = pmd->B, *C = pmd->C;
     int begin = pmd->begin, end = pmd->end, P = pmd->P, N = pmd->N;
+
     for (int index = begin; index < end; index++) {
         int  i = index / P, j = index % P;
         C[i * P + j] = 0;
@@ -46,6 +61,7 @@ DWORD ThreadProc(LPVOID IpParam) {
     }
     return 0;
 }
+
 
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C);
 void display_Matrix(const Matrix & A);
@@ -76,8 +92,18 @@ int main()
     C.total = M*P;
     C.datas = new float[C.total]();
 
-    const int m = 5;
-    for(int i = 0; i< 4; i++){
+        // 线程多的话，这个最好应该提出来
+    int sizeB = N * P;
+    int *revB = new int[sizeB];
+    for (int index = 0; index < sizeB; index++) {
+        int i = index / P, j = index % P;
+        revB[i * P + j] = B.datas[j * P + i];
+    }
+
+
+
+    const int m = 4;
+//    for(int i = 0; i< 5; i++){
     auto t1=std::chrono::steady_clock::now(); 
 
     // ----------------------------------- 多线程
@@ -87,7 +113,7 @@ int main()
     HANDLE hThread[m];
     static MYDATA mydt[m];
     int temp = (M * P) / m;
-    for (int i = 0; i < m; ++i) {
+   for (int i = 0; i < m; ++i) {
         mydt[i].A = A.datas, mydt[i].B = B.datas, mydt[i].C = C.datas;
         mydt[i].begin = i * temp, mydt[i].end = i * temp + temp, mydt[i].P = P, mydt[i].N = N;
         if (i == m - 1) // 最后一个线程计算剩余的
@@ -99,12 +125,15 @@ int main()
     auto t2=std::chrono::steady_clock::now();
     double time=std::chrono::duration<double,std::milli>(t2-t1).count();
     cout << "(time: " << time << "ms)" << endl;
-    }
+ //   }
+    
 /*
     display_Matrix(A);
     display_Matrix(B);
+
+    */
     display_Matrix(C);
-*/
+
     delete [] A.datas;
     delete [] B.datas;
     delete [] C.datas;
@@ -155,7 +184,7 @@ void display_Matrix(const Matrix & A){
     cout << "column =" << A.column << endl;
     cout << "total = " << A.total << endl;
     */
-
+   /*
     int n = A.column;
     for(int i = 0; i< A.row;i++){
         for(int j =0 ; j < A.column ; j++){
@@ -164,17 +193,18 @@ void display_Matrix(const Matrix & A){
         cout << endl;
     }
     cout << endl;
-    /*
+    */
+    
     for(int i = 0 ; i< A.total;i++){
         cout << A.datas[i] << ",";
     }
     cout << endl;
-    */
+    
 }
 
 void initial_MatrixA(Matrix &A){
-    A.row = 1400;
-    A.column = 1400;
+    A.row = 4;
+    A.column = 8;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(int i = 0; i< A.total;i++){
@@ -183,8 +213,8 @@ void initial_MatrixA(Matrix &A){
 
 }
 void initial_MatrixB(Matrix &A){
-    A.row = 1400;
-    A.column = 1400;
+    A.row = 8;
+    A.column = 4;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(int i = 0; i< A.total;i++){

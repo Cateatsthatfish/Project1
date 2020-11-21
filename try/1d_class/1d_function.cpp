@@ -12,6 +12,8 @@
 const int a = -1;
 const int b = 1;
 
+int m(0),n(0),l(0);
+
 using namespace std;
 
 struct MYDATA {

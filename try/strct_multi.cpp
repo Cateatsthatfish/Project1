@@ -6,23 +6,24 @@ C: m*l -> C(i,j)=datas[i*l+j]
 */
 #include<chrono> //计算时间
 #include<iostream>
+//#pragma GCC optimize(3, "Ofast", "inline") 
 using namespace std;
+
 struct Matrix{
-    long long row;
-    long long column;
-    long long total ;
+    int row;
+    int column;
+    int total ;
     float * datas;
 };
 
 Matrix & multiplication_ijk(const Matrix & A, const Matrix & B, Matrix &C);
-Matrix & multiplication_ZRH(const Matrix & A, const Matrix & B, Matrix &C);
 Matrix & multiplication_ikj(const Matrix & A, const Matrix & B, Matrix &C);
 void display_Matrix(const Matrix & A);
 void initial_MatrixA(Matrix &A);
 void initial_MatrixB(Matrix &A);
 
 int main(){
-    ////////////initialization type 2 ->use set function
+
     Matrix A;
     initial_MatrixA(A);
     //display_Matrix(A);
@@ -34,29 +35,25 @@ int main(){
     Matrix C;
 
 //    C = multiplication_ZRH(A,B,C);
-    C = multiplication_ijk(A,B,C);
-    C = multiplication_ikj(A,B,C);
+//    C = multiplication_ijk(A,B,C);
+//    C = multiplication_ikj(A,B,C);
 
     cout <<"------ijk------"<<endl;
-    for(int i = 0; i< 5; i++){
-        cout << 1+i <<":";
+//    for(int i = 0; i< 5; i++){
+//        cout << 1+i <<":";
         C = multiplication_ijk(A,B,C);
-    }
+//    }
+    display_Matrix(C);
     
     //display_Matrix(C);
-/*
-    cout <<"------ZRH------"<<endl;
-    for(int i = 0; i< 5; i++){
-        cout << 1+i <<":";
-        C = multiplication_ZRH(A,B,C);
-    }
-*/
-    cout <<"------ikj------"<<endl;
-    for(int i = 0; i< 5; i++){
-        cout << 1+i <<":";
-        C = multiplication_ikj(A,B,C);
-    }
 
+
+    cout <<"------ikj------"<<endl;
+//    for(int i = 0; i< 5; i++){
+//        cout << 1+i <<":";
+        C = multiplication_ikj(A,B,C);
+//    }
+    display_Matrix(C);
 
 
 
@@ -76,29 +73,21 @@ int main(){
 // C(i,j) = ΣA(i,k)B(k,j)
 Matrix & multiplication_ijk(const Matrix & A, const Matrix & B, Matrix &C){
 
-    long long m = A.row;
-    long long n = A.column;
-    long long l = B.column;
+    int m = A.row;
+    int n = A.column;
+    int l = B.column;
     C.row = m;
     C.column = l;
     C.total = m*l;
     C.datas = new float[C.total]();
 
     auto t1=std::chrono::steady_clock::now(); //开始时间
-    for(long long i = 0; i < m ; i++ ){
-        for(long long j = 0; j < l; j++ ){
+    for(int i = 0; i < m ; i++ ){
+        for(int j = 0; j < l; j++ ){
             float temp = 0; 
-            for (long long k = 0; k< n; k++){
-                //cout << "i="<< i << " j="<< j << " k= "<< k ;
-                // cout << " k+an*i: " << k+an*i << " j+bn*k: " << j+bn*k ;
-                //cout << "A["<< n*i+k << "] " << "B["<< l*k+j << "] ";
-
-                temp += A.datas[n*i+k] * B.datas[l*k+j];
-                //cout << A.datas[n*i+k] << "*" << B.datas[l*k+j] << " + " ;
+            for (int k = 0; k< n; k++){
+                 temp += A.datas[n*i+k] * B.datas[l*k+j];
                 }
-                //cout << " ->C["<< l*i+j << "]= "<<temp << endl;   
-
-                //cout << " j+ bn*i: " << j+ bn*i << endl;
                 C.datas[l*i+j] = temp;  
         }
     }
@@ -114,23 +103,24 @@ Matrix & multiplication_ijk(const Matrix & A, const Matrix & B, Matrix &C){
 // C(i,k) = ΣA(i,j)B(j,k)
 Matrix & multiplication_ZRH(const Matrix & A, const Matrix & B, Matrix &C){
 
-    long long m = A.row;
-    long long n = A.column;
-    long long l = B.column;
+    int m = A.row;
+    int n = A.column;
+    int l = B.column;
     C.row = m;
     C.column = l;
     C.total = m*l;
     C.datas = new float[C.total]();
 
     auto t1=std::chrono::steady_clock::now(); //开始时间
-    for(long long i = 0; i < m ; i++ ){
-        for(long long j = 0; j < l; j++ ){
-            float multi = A.datas[n*i+j]; 
-            for (long long k = 0; k< n; k++){
+    for(int i = 0; i < m ; i++ ){
+        for (int k = 0; k< n; k++){
+        float multi = A.datas[n*i+k]; 
+        for(int j = 0; j < l; j++ ){           
+            
                 //cout << "i="<< i << " j="<< j << " k= "<< k ;
                 // cout << " k+an*i: " << k+an*i << " j+bn*k: " << j+bn*k ;
                 //cout << "A["<< n*i+k << "] " << "B["<< l*k+j << "] ";
-                C.datas[l*i+k] += multi * B.datas[l*k+j];
+                C.datas[l*i+j] += multi * B.datas[l*k+j];
                 //cout << A.datas[n*i+k] << "*" << B.datas[l*k+j] << " + " ;
                 }
                 //cout << " ->C["<< l*i+j << "]= "<<temp << endl;   
@@ -148,24 +138,22 @@ Matrix & multiplication_ZRH(const Matrix & A, const Matrix & B, Matrix &C){
 
 Matrix & multiplication_ikj(const Matrix & A, const Matrix & B, Matrix &C){
 
-    long long m = A.row;
-    long long n = A.column;
-    long long l = B.column;
+    int m = A.row;
+    int n = A.column;
+    int l = B.column;
     C.row = m;
     C.column = l;
     C.total = m*l;
     C.datas = new float[C.total]();
 
     auto t1=std::chrono::steady_clock::now(); //开始时间
-    for(long long i = 0; i < m ; i++ ){
-        for (long long k = 0; k< n; k++){
+    for(int i = 0; i < m ; i++ ){
+        for (int k = 0; k< n; k++){
             float mult = A.datas[n*i+k];
-            for(long long j = 0; j < l; j++ ){
+            for(int j = 0; j < l; j++ ){
                C.datas[l*i+j] += mult * B.datas[l*k+j];
- 
                 }
- 
-        }
+         }
     }
     auto t2=std::chrono::steady_clock::now(); //结束时间
     double time=std::chrono::duration<double,std::milli>(t2-t1).count();
@@ -187,11 +175,11 @@ void display_Matrix(const Matrix & A){
     cout << endl;
 
    
-    long long n = A.column;
+    int n = A.column;
     
     
-    for(long long i = 0; i< A.row;i++){
-        for(long long j =0 ; j < A.column ; j++){
+    for(int i = 0; i< A.row;i++){
+        for(int j =0 ; j < A.column ; j++){
         cout << A.datas[i*n+j] << "  ";
         }
         cout << endl;
@@ -201,21 +189,21 @@ void display_Matrix(const Matrix & A){
 }
 
 void initial_MatrixA(Matrix &A){
-    A.row = 1000;
-    A.column = 1000;
+    A.row = 4;
+    A.column = 8;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
-    for(long long i = 0; i< A.total;i++){
+    for(int i = 0; i< A.total;i++){
         A.datas[i] = i;
     }
 
 }
 void initial_MatrixB(Matrix &A){
-    A.row = 1000;
-    A.column = 1000;
+    A.row = 8;
+    A.column = 4;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
-    for(long long i = 0; i< A.total;i++){
+    for(int i = 0; i< A.total;i++){
         A.datas[i] = i;
     }
 

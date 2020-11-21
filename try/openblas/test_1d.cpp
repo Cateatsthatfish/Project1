@@ -1,15 +1,18 @@
+// from strct_multi.cpp & my_Matrix.h
+
 /*
-https://blog.csdn.net/qq_40515692/article/details/106749232
+矩阵定位和数组定位
+A：m*n -> A(i,k)=datas[i*n+k]
+B：n*l -> B(k,j)=datas[k*l+j]
+C: m*l -> C(i,j)=datas[i*l+j]
 */
+#include<chrono> //计算时间
 
-
-#include <windows.h> //多线程
-#include <iostream>
-#include <ctime>
-#include <chrono>  // 计算时间
-
+#include <cstdlib>
+#include <immintrin.h>
+// my_Matrix.h
+#include<iostream>
 using namespace std;
-
 struct Matrix{
     long long row;
     long long column;
@@ -17,96 +20,68 @@ struct Matrix{
     float * datas;
 };
 
-struct MYDATA {
-    long long begin, end;
-    float *A, *B, *C;
-    long long P, N;
-};
-
-
-//?
-DWORD ThreadProc(LPVOID IpParam) { 
-    MYDATA *pmd = (MYDATA *) IpParam;
-    float *A = pmd->A, *B = pmd->B, *C = pmd->C;
-    long long begin = pmd->begin, end = pmd->end, P = pmd->P, N = pmd->N;
-
-    for (long long index = begin; index < end; index++) {
-        long long  i = index / P, j = index % P;
-        C[i * P + j] = 0;
-        for (long long k = 0; k < N; ++k) {
-            C[i * P + j] += A[i * N + k] * B[k * P + j];
-        }
-    }
-    return 0;
-}
-
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C);
+Matrix & multiplication_openblas(const Matrix & A, const Matrix & B, Matrix &C);
+void kernel(float* c, float **a , float*b, int row, int col);
 void display_Matrix(const Matrix & A);
 void initial_MatrixA(Matrix &A);
 void initial_MatrixB(Matrix &A);
 
-
-
-int main() {
-
+int main(){
+    ////////////initialization type 2 ->use set function
     Matrix A;
     initial_MatrixA(A);
-    //display_Matrix(A);
+    display_Matrix(A);
 
     Matrix B;
     initial_MatrixB(B);
-    //display_Matrix(B);
+    display_Matrix(B);
 
     Matrix C;
-
-    // const？
-    long long M = A.row;
-    long long N = A.column;
-    long long P = B.column;
-    C.row = M;
-    C.column = P;
-    C.total = M*P;
-    C.datas = new float[C.total]();
-
-
-    // ----------------------------------- 多线程
-    const int m = 4;
-    
-    for(int i = 0; i < 5 ; i++){
-    auto t1=std::chrono::steady_clock::now(); 
-    //句柄：
-    //https://www.cnblogs.com/marchtea/archive/2011/12/04/2275534.html
-    HANDLE hThread[m];
-    static MYDATA mydt[m];
-    int temp = (M * P) / m;
-    for (int i = 0; i < m; ++i) {
-        mydt[i].A = A.datas, mydt[i].B = B.datas, mydt[i].C = C.datas;
-        mydt[i].begin = i * temp, mydt[i].end = i * temp + temp, mydt[i].P = P, mydt[i].N = N;
-        if (i == m - 1) // 最后一个线程计算剩余的
-            mydt[i].end = M * P;
-        hThread[i] = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE) ThreadProc, &mydt[i], 0, NULL);
-    }
-    WaitForMultipleObjects(m, hThread, TRUE, INFINITE);
-
-    auto t2=std::chrono::steady_clock::now();
-    double time=std::chrono::duration<double,std::milli>(t2-t1).count();
-    std::cout << "(time: " << time << "ms)" << endl;
-
-    }
-
-/*
-    display_Matrix(A);
-    display_Matrix(B);
+    C = multiplication(A,B,C);
     display_Matrix(C);
-*/
+
+    /*
+    for(int i = 0; i< 5; i++){
+        cout << 1+i <<":";
+        C = multiplication(A,B,C);
+    }
+    */
+    
+    cout << "finished!" <<endl;
+    //display_Matrix(C);
+
     delete [] A.datas;
     delete [] B.datas;
     delete [] C.datas;
 
-
+    //Matrix C = multiplication()
     return 0;
 }
 
+void kernel(float* c, float **a , float*b, int row, int col){
+    register float t0(0),t1(0),t2(0),t3(0),t4(0),t5(0),t6(0),t7(0),
+                    t8(0),t9(0),t10(0),t11(0),t12(0),t13(0),t14(0),t15(0); 
+
+
+
+}
+Matrix & multiplication_openblas(const Matrix & A, const Matrix & B, Matrix &C){
+    long long m = A.row;
+    long long n = A.column;
+    long long l = B.column;
+    C.row = m;
+    C.column = l;
+    C.total = m*l;
+    C.datas = new float[C.total]();
+
+    float *tr[4];
+
+    for(int i = 0; i< 4; i++){
+        tr[i] = new float[n]();
+    }
+    //for(int j = )
+}
 
 Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
 
@@ -143,6 +118,8 @@ Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C){
     return C;
 
 }
+
+
 void display_Matrix(const Matrix & A){
     /*
     cout << "row = " << A.row << endl;
@@ -150,25 +127,28 @@ void display_Matrix(const Matrix & A){
     cout << "total = " << A.total << endl;
     */
 
-    long long n = A.column;
-    for(long long i = 0; i< A.row;i++){
-        for(long long j =0 ; j < A.column ; j++){
-        std::cout << A.datas[i*n+j] << " ";
-        }
-        std::cout << endl;
-    }
-    std::cout << endl;
-    /*
     for(int i = 0 ; i< A.total;i++){
         cout << A.datas[i] << ",";
     }
     cout << endl;
-    */
+
+   
+    long long n = A.column;
+    
+    
+    for(long long i = 0; i< A.row;i++){
+        for(long long j =0 ; j < A.column ; j++){
+        cout << A.datas[i*n+j] << "  ";
+        }
+        cout << endl;
+    }
+    
+
 }
 
 void initial_MatrixA(Matrix &A){
-    A.row = 1400;
-    A.column = 1400;
+    A.row = 2;
+    A.column = 5;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){
@@ -177,8 +157,8 @@ void initial_MatrixA(Matrix &A){
 
 }
 void initial_MatrixB(Matrix &A){
-    A.row = 1400;
-    A.column = 1400;
+    A.row = 5;
+    A.column = 2;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){

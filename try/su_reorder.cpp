@@ -18,7 +18,7 @@ struct Matrix{
     float * datas;
 };
 
-Matrix & multiplication_reorder(const Matrix & A, const Matrix & B, Matrix &C);
+Matrix & multiplication(const Matrix & A, const Matrix & B, Matrix &C);
 void display_Matrix(const Matrix & A);
 void initial_MatrixA(Matrix &A);
 void initial_MatrixB(Matrix &A);
@@ -34,19 +34,16 @@ int main(){
     //display_Matrix(B);
 
     Matrix C;
-    C = multiplication_reorder(A,B,C);
+    C = multiplication(A,B,C);
     //display_Matrix(C);
+
     
     for(int i = 0; i< 5; i++){
         cout << 1+i <<":";
-        C = multiplication_reorder(A,B,C);
+        C = multiplication(A,B,C);
     }
     
-   /*
-   display_Matrix(A);
-   display_Matrix(B);
-   display_Matrix(C);
-    */
+    
     cout << "finished!" <<endl;
     //display_Matrix(C);
 
@@ -58,7 +55,7 @@ int main(){
     return 0;
 }
 
-Matrix & multiplication_reorder(const Matrix & A, const Matrix & B, Matrix &C){
+Matrix & multiplication_ikj(const Matrix & A, const Matrix & B, Matrix &C){
 
     long long m = A.row;
     long long n = A.column;
@@ -71,22 +68,12 @@ Matrix & multiplication_reorder(const Matrix & A, const Matrix & B, Matrix &C){
     auto t1=std::chrono::steady_clock::now(); //开始时间
     for(long long i = 0; i < m ; i++ ){
         for (long long k = 0; k< n; k++){
-        if(A.datas[n*i+k]){
-        for(long long j = 0; j < l; j++ ){
-
-            
-                //cout << "i="<< i << " j="<< j << " k= "<< k ;
-                // cout << " k+an*i: " << k+an*i << " j+bn*k: " << j+bn*k ;
-                //cout << "A["<< n*i+k << "] " << "B["<< l*k+j << "] ";
-
-                C.datas[l*i+j] += A.datas[n*i+k] * B.datas[l*k+j];
-                //cout << A.datas[n*i+k] << "*" << B.datas[l*k+j] << " + " ;
+            float mult = A.datas[n*i+k];
+            for(long long j = 0; j < l; j++ ){
+               C.datas[l*i+j] += mult * B.datas[l*k+j];
+ 
                 }
-                //cout << " ->C["<< l*i+j << "]= "<<temp << endl;   
-
-                //cout << " j+ bn*i: " << j+ bn*i << endl;
-                 
-        }
+ 
         }
     }
     auto t2=std::chrono::steady_clock::now(); //结束时间
@@ -102,6 +89,13 @@ void display_Matrix(const Matrix & A){
     cout << "column =" << A.column << endl;
     cout << "total = " << A.total << endl;
     */
+
+    for(int i = 0 ; i< A.total;i++){
+        cout << A.datas[i] << ",";
+    }
+    cout << endl;
+
+   
     long long n = A.column;
     
     
@@ -111,17 +105,13 @@ void display_Matrix(const Matrix & A){
         }
         cout << endl;
     }
-    /*
-    for(int i = 0 ; i< A.total;i++){
-        cout << A.datas[i] << ",";
-    }
-    cout << endl;
-    */
+    
+
 }
 
 void initial_MatrixA(Matrix &A){
-    A.row = 1400;
-    A.column = 1400;
+    A.row = 1000;
+    A.column = 1000;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){
@@ -130,8 +120,8 @@ void initial_MatrixA(Matrix &A){
 
 }
 void initial_MatrixB(Matrix &A){
-    A.row = 1400;
-    A.column = 1400;
+    A.row = 1000;
+    A.column = 1000;
     A.total = A.row * A.column;
     A.datas = new float[A.total]();
     for(long long i = 0; i< A.total;i++){

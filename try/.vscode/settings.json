@@ -1,6 +1,11 @@
 {
     "files.associations": {
         "chrono": "cpp",
-        "ratio": "cpp"
+        "ratio": "cpp",
+        "ostream": "cpp",
+        "istream": "cpp",
+        "iostream": "cpp",
+        "xstring": "cpp",
+        "iterator": "cpp"
     }
 }
