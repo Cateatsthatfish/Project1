@@ -133,30 +133,13 @@ int main(){
     i = 0;
     math a("a",4),b("b",4);
     math c = a.plus(b);
-    //math::math(int i) called 
+    // 一次带参数的构造函数
     math d; 
-    //math() called -> c
+    // 一次不带参的构造函数
     d = a.plus(b);
-    //math::math(int i) called 
-    //math & math::operator=(const math & m) called 
-    //math::~math() called
-
-    //math d = a.plus(b);
-     
-    //math::math(int i) called
-    //math f = c.plus(d);
-    //math::math(int i) called
-
-    /*
-    math a;
-    //math() called
-    math b(4);
-    //math::math(int i) called
-    math c(b);
-    //math::math(const math & m) called 
-    a = c;
-    //math & math::operator=(const math & m) called
-    */
+    // 一次带参数的构造函数（构造临时对象）
+    // 一次=
+    // 一次析构函数（销毁临时对象）
 
     cout << "-------a------"<< endl;    
     cout << a << endl;
