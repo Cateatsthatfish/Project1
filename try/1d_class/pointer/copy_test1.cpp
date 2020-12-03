@@ -3,6 +3,8 @@
 
 using namespace std;
 
+int i;
+
 class math{
     private:
     int * matrix;
@@ -108,9 +110,15 @@ ostream & operator << (ostream & os, const math & m ){
 }
 
 math math::plus(const math & m) const{
-    
+    i = i+1;
+    string tn = "temp";
     cout << "------function starts------" <<endl;
-    math temp(m.name,m.length);
+    if(i==1){
+        tn = "temp1";        
+    }if(i==2){
+        tn = "temp2";
+    }
+    math temp(tn,m.length);
 
     for(int i =0 ;i <length;i++){
         temp.matrix[i] = this->matrix[i]+m.matrix[i];
@@ -121,7 +129,8 @@ math math::plus(const math & m) const{
 }   
 
 int main(){
-
+    
+    i = 0;
     math a("a",4),b("b",4);
     math c = a.plus(b);
     //math::math(int i) called 
