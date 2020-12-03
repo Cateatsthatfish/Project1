@@ -1,3 +1,4 @@
+//值拷贝
 #include <iostream>
 #include <string>
 
@@ -11,10 +12,9 @@ class math{
     int length;
     string name;
 
-    //int * refcount;
-
     public:
     math():matrix(nullptr),length(0),name("not given"){cout <<"math() called" << endl;}
+    math(string n):matrix(nullptr),length(0),name(n){cout <<n << ": math(string n) called" << endl;}
     math(string n , int i);
     math(const math& m);
     ~math();
@@ -46,7 +46,8 @@ math::math(string n, int i){
 // 值复制
 // 一定会构造一个新的类
 math::math(const math & m){
-    name = m.name;
+    
+    name = name.append("&").append(m.name);
     cout << name << ": math::math(const math & m) called "<< endl;
     length = m.length;
     matrix = new int [length];
@@ -67,7 +68,7 @@ math & math::operator=(const math & m){
     cout << "math & math::operator=(const math & m) called "<< endl;
     if(this != &m){
     length = m.length;
-    name = m.name;
+    name = name.append("&").append(m.name);
 
     if(matrix){
         delete[] matrix;
@@ -134,7 +135,7 @@ int main(){
     math a("a",4),b("b",4);
     math c = a.plus(b);
     // 一次带参数的构造函数
-    math d; 
+    math d("d"); 
     // 一次不带参的构造函数
     d = a.plus(b);
     // 一次带参数的构造函数（构造临时对象）
