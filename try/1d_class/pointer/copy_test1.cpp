@@ -66,7 +66,7 @@ math::~math(){
 // =
 math & math::operator=(const math & m){
     cout << "math & math::operator=(const math & m) called "<< endl;
-    if(this != &m){
+    //if(this != &m){
     length = m.length;
     name = name.append("&").append(m.name);
 
@@ -78,9 +78,9 @@ math & math::operator=(const math & m){
     for(int i = 0; i < length;i++){
         matrix[i] = m.matrix[i];
     }
-    }else{
+    
         return *this;
-    }
+    
 }
 
 // 移动赋值
