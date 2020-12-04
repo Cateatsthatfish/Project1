@@ -25,6 +25,8 @@ class math{
     //math & operator = (math && m);
     // <<
     friend ostream & operator << (ostream & os, const math & m );
+    // >>
+    friend void operator >> (std::istream & is, math & m);
     // multi_ijk
     math plus(const math & m) const;
 
@@ -33,7 +35,7 @@ class math{
 
 math::math(string n, int i){
     name = n;
-    cout << name << ": math::math(int i) called" << endl;
+    cout << name << ": math::math(string n，int i) called" << endl;
     length = i;
     matrix = new int[i];
     
@@ -101,15 +103,29 @@ math & math::operator=(math && m){
 ostream & operator << (ostream & os, const math & m ){
     os << m.name << ": m.lenght = " << m.length << endl;
     if(m.length==0){
-        cout << "no thing here!" << endl;
+        os << "no thing here!" << endl;
     }else{
     for(int i = 0; i< m.length; i++){
-        cout << m.matrix[i] << " ";
+        os << m.matrix[i] << " ";
+    } 
     }
-    }
+    os<< endl;
     return os;
 }
 
+void operator >> (std::istream & is, math & m){
+    string name;
+    int length;
+    cout << "length: ";
+    is >> length;
+    //cout << endl;
+    cout << "name: ";
+    is >> name;
+    //cout << endl;
+    math temp(name,length);
+    m = temp;
+
+}
 math math::plus(const math & m) const{
     i = i+1;
     string tn = "temp";
@@ -130,26 +146,57 @@ math math::plus(const math & m) const{
 }   
 
 int main(){
-    
+/* --------- test cin ---------*/
+
+    math a;
+    cin >> a;
+    cout << a;
+
+/* ---------- with out cin -----------  
     i = 0;
     math a("a",4),b("b",4);
     math c = a.plus(b);
+    //math d(b);
+    // 调用一次拷贝构造
+    // d = d.plus(a);
+    // 调用一次含参构造一个中间变量
+    // =
+    // 调用一个析构函数销毁中间变量
+
+
+    
+    //math c(a.plus(b));
     // 一次带参数的构造函数
+    
     math d("d"); 
     // 一次不带参的构造函数
     d = a.plus(b);
     // 一次带参数的构造函数（构造临时对象）
     // 一次=
     // 一次析构函数（销毁临时对象）
+    /*
+    math e = d;
+    // 一次拷贝构造
+    math f(a.plus(b));
+    
 
+
+   
     cout << "-------a------"<< endl;    
     cout << a << endl;
     cout << "-------b------"<< endl;
     cout << b << endl;
     cout << "-------c------"<< endl;
     cout << c << endl;
+    
     cout << "-------d------"<< endl;
     cout << d << endl;
+    
+    cout << "-------e------"<< endl;
+    cout << e << endl;
+    cout << "-------f------"<< endl;
+    cout << f << endl;
+    */
 
     return 0;
 }
