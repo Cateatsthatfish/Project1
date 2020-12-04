@@ -3,6 +3,7 @@
 // 随机数
 #include <cstdlib>
 #include <ctime>
+#include <string> //getline
 
 const int a = -1;
 const int b = 1;
@@ -10,6 +11,8 @@ const int b = 1;
 using namespace std;
 
 int m(4),n(8),p(4);
+
+bool isValid_int(string in);
 
 class Matrix{
 private:
@@ -37,9 +40,11 @@ public:
     Matrix & operator = (const Matrix & B);
     // << 
     friend ostream & operator << (ostream & os, const Matrix & B);
-    // >> unfinished 
+    // >>
+    friend void operator >> (std::istream & is, Matrix & B);
     
     Matrix multi_ijk(const Matrix &B)const;
+    
 
     // C = A*B
     Matrix operator * (const Matrix & B) const;
@@ -122,6 +127,55 @@ ostream & operator << (ostream & os, const Matrix & B){
     os << endl;
     return os;
 }
+// >>
+void operator >> (std::istream & is, Matrix & B){
+    string n1_in, m1_in; 
+    int n1,m1;
+    //cout << "initialize a m*n matrix:(m,n are positive integers)" << endl;
+    cout << "#row = ";
+    getline(cin,m1_in);
+    while(!isValid_int(m1_in)){
+    cout << "Invalid input! please try again! "<<endl;
+    cout << "#row = ";
+    getline(cin,m1_in);    
+        }
+
+    cout << "#column = ";
+    getline(cin,n1_in);
+    while(!isValid_int(n1_in)){
+    cout << "Invalid input! please try again! "<<endl;
+    cout << "#column = ";
+    getline(cin,n1_in);      
+        }
+
+    m1 = atoi(m1_in.c_str());
+    n1 = atoi(n1_in.c_str());
+
+    Matrix temp(m1,n1); //里面的值是随机数
+    B = temp;
+
+}
+
+
+bool isValid_int(string in){
+    bool len = true;
+    if(in.length()==0){
+        len = false;
+    
+    }
+    // 不允许第一位是0的情况,与不允许输入0
+    if(in[0]=='0'){
+        len = false;
+    }
+    for(int i = 0 ; i< in.length();i++){
+        if(in[i]>'9'||in[i]<'0')
+        {
+            len = false;
+            break;
+        }
+    }    
+    return len;
+}
 
 Matrix Matrix:: multi_ijk(const Matrix &B)const{
     Matrix temp(m,p,0);
@@ -168,11 +222,18 @@ Matrix operator * (float a, const Matrix &B){
 }
 
 int main(){
+
+    Matrix A;
+    cin >> A;
+    cout << A;
+    
+/* ------ test cout <<  ---
     Matrix A(m,n,1);
     Matrix B(n,p,2);
     
     cout << A << endl;
     cout << B << endl;
+    */
 /* ----- test multi_ijk()
     Matrix C = A.multi_ijk(B);
     cout << C << endl;
@@ -197,13 +258,14 @@ int main(){
     D = A*0.1;
     cout << D << endl;
  */   
-/* ----- test a*B ---- */
+/* ----- test a*B ---- 
     Matrix C = 0.4*A;
     cout << C << endl;
 
     Matrix D;
     D = 0.1*A;
-    cout << D << endl;    
+    cout << D << endl;  
+    */  
 
 
     return 0;
